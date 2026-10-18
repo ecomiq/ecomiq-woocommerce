@@ -1,0 +1,144 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ecomiq for WooCommerce 1.0.0\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Domain: ecomiq-for-woocommerce\n"
+
+msgid "Ecomiq for WooCommerce"
+msgstr "Ecomiq para WooCommerce"
+
+msgid "Connect your store to Ecomiq in one click to sync products, stock, prices and orders."
+msgstr "Conecta tu tienda con Ecomiq en un clic para sincronizar productos, stock, precios y pedidos."
+
+msgid "Use an address like https://admin.ecomiq.pe, without a path."
+msgstr "Usa una dirección como https://admin.ecomiq.pe, sin ruta."
+
+msgid "WooCommerce could not create the API key."
+msgstr "WooCommerce no pudo crear la clave de API."
+
+msgid "The authorization code is invalid or expired. Connect again from Ecomiq."
+msgstr "El código de autorización no es válido o venció. Vuelve a conectar desde Ecomiq."
+
+msgid "WordPress does not detect HTTPS, so WooCommerce will reject the API key."
+msgstr "WordPress no detecta HTTPS, así que WooCommerce rechazará la clave de API."
+
+msgid "Settings"
+msgstr "Ajustes"
+
+msgid "You are not allowed to connect this store."
+msgstr "No tienes permiso para conectar esta tienda."
+
+msgid "Connect %s to Ecomiq"
+msgstr "Conectar %s con Ecomiq"
+
+msgid "Ecomiq will be able to read and update products, stock, prices and orders."
+msgstr "Ecomiq podrá leer y actualizar productos, stock, precios y pedidos."
+
+msgid "Ecomiq store"
+msgstr "Tienda en Ecomiq"
+
+msgid "Access as"
+msgstr "Acceso como"
+
+msgid "Returns to"
+msgstr "Vuelve a"
+
+msgid "This replaces the current connection."
+msgstr "Reemplaza la conexión actual."
+
+msgid "This replaces the current connection with %s."
+msgstr "Reemplaza la conexión actual con %s."
+
+msgid "Approve"
+msgstr "Aprobar"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "The link is incomplete or expired. Start again from Ecomiq."
+msgstr "El enlace está incompleto o venció. Vuelve a empezar desde Ecomiq."
+
+msgid "This request wants to return to %1$s, but this store only trusts %2$s. Do not approve it."
+msgstr "Esta solicitud quiere volver a %1$s, pero esta tienda solo confía en %2$s. No la apruebes."
+
+msgid "If you are testing your own Ecomiq installation, change the address under Advanced."
+msgstr "Si pruebas tu propia instalación de Ecomiq, cambia la dirección en Avanzado."
+
+msgid "Invalid request"
+msgstr "Solicitud no válida"
+
+msgid "Back"
+msgstr "Volver"
+
+msgid "Connect to Ecomiq"
+msgstr "Conectar con Ecomiq"
+
+msgid "Sync products, stock, prices and orders of %s with Ecomiq."
+msgstr "Sincroniza productos, stock, precios y pedidos de %s con Ecomiq."
+
+msgid "WordPress does not detect HTTPS. WooCommerce rejects API keys without it."
+msgstr "WordPress no detecta HTTPS. WooCommerce rechaza las claves de API sin HTTPS."
+
+msgid "Turn on permalinks in Settings → Permalinks."
+msgstr "Activa los enlaces permanentes en Ajustes → Enlaces permanentes."
+
+msgid "Connect"
+msgstr "Conectar"
+
+msgid "Advanced"
+msgstr "Avanzado"
+
+msgid "Ecomiq address"
+msgstr "Dirección de Ecomiq"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Change it only to test your own Ecomiq installation."
+msgstr "Cámbiala solo para probar tu propia instalación de Ecomiq."
+
+msgid "Connected to Ecomiq"
+msgstr "Conectada con Ecomiq"
+
+msgid "Ecomiq syncs products, stock, prices and orders of %s."
+msgstr "Ecomiq sincroniza productos, stock, precios y pedidos de %s."
+
+msgid "Not yet"
+msgstr "Todavía no"
+
+msgid "%s ago"
+msgstr "hace %s"
+
+msgid "Last access"
+msgstr "Último acceso"
+
+msgid "API key"
+msgstr "Clave de API"
+
+msgid "%1$s by %2$s"
+msgstr "%1$s por %2$s"
+
+msgid "Connected on"
+msgstr "Conectada el"
+
+msgid "Open Ecomiq"
+msgstr "Abrir Ecomiq"
+
+msgid "Disconnect"
+msgstr "Desconectar"
+
+msgid "Disconnect from Ecomiq?"
+msgstr "¿Desconectar de Ecomiq?"
+
+msgid "Ecomiq stops syncing this store. Its API key and webhooks are deleted. Your products and orders do not change."
+msgstr "Ecomiq deja de sincronizar esta tienda. Se borran su clave de API y sus webhooks. Tus productos y pedidos no cambian."
+
+msgid "Disconnected from Ecomiq."
+msgstr "Desconectada de Ecomiq."
+
+msgid "Address saved."
+msgstr "Dirección guardada."
