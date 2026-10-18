@@ -26,7 +26,7 @@ def sources():
         text = path.read_text(encoding="utf-8")
         used.update(re.findall(r"""__\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'""" + DOMAIN, text))
         used.update(re.findall(r"""esc_html__\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'""" + DOMAIN, text))
-        for header in ("Plugin Name", "Description"):
+        for header in ("Description",):
             match = re.search(rf"^\s*\*\s*{header}:\s*(.+)$", text, re.MULTILINE)
             if match:
                 used.add(match.group(1).strip())

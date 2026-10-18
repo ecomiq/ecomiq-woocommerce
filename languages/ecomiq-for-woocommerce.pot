@@ -1,0 +1,318 @@
+# Copyright (C) 2026 Ecomiq
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Ecomiq for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://ecomiq.pe\n"
+"Last-Translator: Ecomiq\n"
+"Language-Team: Ecomiq\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-18T18:33:50+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: ecomiq-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: ecomiq-for-woocommerce.php
+msgid "Ecomiq for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: ecomiq-for-woocommerce.php
+msgid "https://ecomiq.pe"
+msgstr ""
+
+#. Description of the plugin
+#: ecomiq-for-woocommerce.php
+msgid "Connect your store to Ecomiq in one click to sync products, stock, prices and orders."
+msgstr ""
+
+#. Author of the plugin
+#: ecomiq-for-woocommerce.php
+msgid "Ecomiq"
+msgstr ""
+
+#: includes/class-activity.php:69
+#: includes/class-admin.php:322
+msgid "Connected to Ecomiq"
+msgstr ""
+
+#: includes/class-activity.php:70
+msgid "Disconnected from Ecomiq"
+msgstr ""
+
+#: includes/class-activity.php:71
+msgid "Created a product"
+msgstr ""
+
+#: includes/class-activity.php:72
+msgid "Updated a product"
+msgstr ""
+
+#: includes/class-activity.php:73
+msgid "Updated stock"
+msgstr ""
+
+#: includes/class-activity.php:74
+msgid "Updated a price"
+msgstr ""
+
+#: includes/class-activity.php:75
+msgid "Changed a product status"
+msgstr ""
+
+#: includes/class-activity.php:76
+msgid "Deleted a product"
+msgstr ""
+
+#: includes/class-activity.php:77
+msgid "Updated products in bulk"
+msgstr ""
+
+#: includes/class-activity.php:78
+msgid "Created an order"
+msgstr ""
+
+#: includes/class-activity.php:79
+msgid "Updated an order"
+msgstr ""
+
+#: includes/class-activity.php:80
+msgid "Registered a webhook"
+msgstr ""
+
+#: includes/class-activity.php:81
+msgid "Removed a webhook"
+msgstr ""
+
+#: includes/class-activity.php:82
+msgid "Changed store data"
+msgstr ""
+
+#: includes/class-activity.php:83
+msgid "A request failed"
+msgstr ""
+
+#: includes/class-activity.php:84
+msgid "A webhook did not reach Ecomiq"
+msgstr ""
+
+#. translators: %d: number of products
+#: includes/class-activity.php:147
+#, php-format
+msgid "Products: %d"
+msgstr ""
+
+#: includes/class-admin.php:39
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php:53
+msgid "Connect your store to Ecomiq to sync products, stock, prices and orders."
+msgstr ""
+
+#: includes/class-admin.php:54
+#: includes/class-admin.php:208
+#: includes/class-admin.php:293
+msgid "Connect to Ecomiq"
+msgstr ""
+
+#: includes/class-admin.php:55
+msgid "Dismiss this notice."
+msgstr ""
+
+#. translators: %s: Ecomiq privacy policy URL
+#: includes/class-admin.php:73
+#, php-format
+msgid "When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. Ecomiq handles this data under its privacy policy: %s"
+msgstr ""
+
+#: includes/class-admin.php:109
+msgid "Activity"
+msgstr ""
+
+#: includes/class-admin.php:110
+msgid "Full logs"
+msgstr ""
+
+#. translators: %s: human time difference
+#: includes/class-admin.php:119
+#: includes/class-admin.php:337
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: includes/class-admin.php:183
+msgid "You are not allowed to connect this store."
+msgstr ""
+
+#. translators: %s: store name
+#: includes/class-admin.php:235
+#, php-format
+msgid "Connect %s to Ecomiq"
+msgstr ""
+
+#: includes/class-admin.php:239
+msgid "Ecomiq will be able to read and update products, stock, prices and orders."
+msgstr ""
+
+#: includes/class-admin.php:242
+#: includes/class-admin.php:331
+msgid "Ecomiq store"
+msgstr ""
+
+#: includes/class-admin.php:244
+msgid "Access as"
+msgstr ""
+
+#: includes/class-admin.php:245
+msgid "Returns to"
+msgstr ""
+
+#: includes/class-admin.php:248
+msgid "This replaces the current connection."
+msgstr ""
+
+#. translators: %s: Ecomiq store name
+#: includes/class-admin.php:252
+#, php-format
+msgid "This replaces the current connection with %s."
+msgstr ""
+
+#: includes/class-admin.php:265
+msgid "Approve"
+msgstr ""
+
+#: includes/class-admin.php:266
+#: includes/class-admin.php:376
+msgid "Cancel"
+msgstr ""
+
+#: includes/class-admin.php:271
+msgid "The link is incomplete or expired. Start again from Ecomiq."
+msgstr ""
+
+#. translators: 1: address the request returns to, 2: trusted Ecomiq address
+#: includes/class-admin.php:277
+#, php-format
+msgid "This request wants to return to %1$s, but this store only trusts %2$s. Do not approve it."
+msgstr ""
+
+#: includes/class-admin.php:281
+msgid "If you are testing your own Ecomiq installation, change the address under Advanced."
+msgstr ""
+
+#: includes/class-admin.php:283
+msgid "Invalid request"
+msgstr ""
+
+#: includes/class-admin.php:288
+msgid "Back"
+msgstr ""
+
+#. translators: %s: store name
+#: includes/class-admin.php:296
+#, php-format
+msgid "Sync products, stock, prices and orders of %s with Ecomiq."
+msgstr ""
+
+#: includes/class-admin.php:301
+msgid "WordPress does not detect HTTPS. WooCommerce rejects API keys without it."
+msgstr ""
+
+#: includes/class-admin.php:304
+msgid "Turn on permalinks in Settings → Permalinks."
+msgstr ""
+
+#: includes/class-admin.php:307
+msgid "Connect"
+msgstr ""
+
+#: includes/class-admin.php:309
+msgid "Advanced"
+msgstr ""
+
+#: includes/class-admin.php:313
+msgid "Ecomiq address"
+msgstr ""
+
+#: includes/class-admin.php:315
+msgid "Save"
+msgstr ""
+
+#: includes/class-admin.php:316
+msgid "Change it only to test your own Ecomiq installation."
+msgstr ""
+
+#. translators: %s: store name
+#: includes/class-admin.php:325
+#, php-format
+msgid "Ecomiq syncs products, stock, prices and orders of %s."
+msgstr ""
+
+#: includes/class-admin.php:333
+msgid "Not yet"
+msgstr ""
+
+#: includes/class-admin.php:341
+msgid "Last access"
+msgstr ""
+
+#: includes/class-admin.php:342
+msgid "API key"
+msgstr ""
+
+#. translators: 1: date, 2: user name
+#: includes/class-admin.php:348
+#, php-format
+msgid "%1$s by %2$s"
+msgstr ""
+
+#: includes/class-admin.php:353
+msgid "Connected on"
+msgstr ""
+
+#: includes/class-admin.php:360
+msgid "Open Ecomiq"
+msgstr ""
+
+#: includes/class-admin.php:361
+#: includes/class-admin.php:375
+msgid "Disconnect"
+msgstr ""
+
+#: includes/class-admin.php:368
+msgid "Disconnect from Ecomiq?"
+msgstr ""
+
+#: includes/class-admin.php:369
+msgid "Ecomiq stops syncing this store. Its API key and webhooks are deleted. Your products and orders do not change."
+msgstr ""
+
+#: includes/class-admin.php:383
+msgid "Disconnected from Ecomiq."
+msgstr ""
+
+#: includes/class-admin.php:384
+msgid "Address saved."
+msgstr ""
+
+#: includes/class-admin.php:385
+#: includes/class-connection.php:26
+msgid "Use an address like https://admin.ecomiq.pe, without a path."
+msgstr ""
+
+#: includes/class-authorization.php:66
+msgid "The authorization code is invalid or expired. Connect again from Ecomiq."
+msgstr ""
+
+#: includes/class-connection.php:189
+msgid "WooCommerce could not create the API key."
+msgstr ""
+
+#: includes/class-rest.php:74
+msgid "WordPress does not detect HTTPS, so WooCommerce will reject the API key."
+msgstr ""

@@ -7,3 +7,6 @@ composer.phar
 
 /dist/
 .DS_Store
+/dev/certs/
+/dev/fresh/site74/
+/dev/fresh/site84/

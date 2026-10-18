@@ -15,6 +15,8 @@
  * Domain Path:          /languages
  * WC requires at least: 9.0
  * WC tested up to:      11.2
+ *
+ * @package Ecomiq\WooCommerce
  */
 
 namespace Ecomiq\WooCommerce;
@@ -25,6 +27,7 @@ const VERSION = '1.0.0';
 const FILE    = __FILE__;
 
 require_once __DIR__ . '/includes/class-connection.php';
+require_once __DIR__ . '/includes/class-activity.php';
 require_once __DIR__ . '/includes/class-authorization.php';
 require_once __DIR__ . '/includes/class-rest.php';
 require_once __DIR__ . '/includes/class-admin.php';
@@ -53,6 +56,7 @@ add_action(
 			return;
 		}
 		Rest::register();
+		Activity::register();
 		Admin::register();
 	}
 );

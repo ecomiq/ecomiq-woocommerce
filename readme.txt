@@ -2,7 +2,7 @@
 Contributors: ecomiq
 Tags: woocommerce, marketplace, multichannel, inventory, orders
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -35,6 +35,10 @@ This plugin connects your store to [Ecomiq](https://ecomiq.pe), an external serv
 
 HTTPS and permalinks turned on. The plugin page warns you if either is missing.
 
+= What did Ecomiq change in my store? =
+
+WooCommerce → Ecomiq lists the last 50 changes Ecomiq made, its failed requests and the webhooks that did not reach it. **Full logs** opens the same entries in WooCommerce → Status → Logs, under the source "ecomiq".
+
 = Where is the API key? =
 
 In WooCommerce → Settings → Advanced → REST API, with the description "Ecomiq".
@@ -42,4 +46,6 @@ In WooCommerce → Settings → Advanced → REST API, with the description "Eco
 == Changelog ==
 
 = 1.0.0 =
-* One-click connection with Ecomiq.
+* New - One-click connection with Ecomiq, with approval in WordPress.
+* New - Activity log of the changes Ecomiq makes, its failed requests and the webhooks that do not reach it.
+* New - Disconnect deletes the API key and the webhooks Ecomiq created.

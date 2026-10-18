@@ -1,0 +1,6 @@
+*** Ecomiq for WooCommerce Changelog ***
+
+2026-10-18 - version 1.0.0
+* New - One-click connection with Ecomiq, with approval in WordPress.
+* New - Activity log of the changes Ecomiq makes, its failed requests and the webhooks that do not reach it.
+* New - Disconnect deletes the API key and the webhooks Ecomiq created.

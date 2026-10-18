@@ -1,9 +1,17 @@
 <?php
+/**
+ * Connection with Ecomiq.
+ *
+ * @package Ecomiq\WooCommerce
+ */
 
 namespace Ecomiq\WooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Connection with Ecomiq: API key, settings and webhooks.
+ */
 final class Connection {
 
 	const OPTION          = 'ecomiq_connection';
@@ -12,6 +20,11 @@ final class Connection {
 	const WEBHOOK_PREFIX  = 'ecomiq-';
 	const WEBHOOK_PATH    = '/webhooks/woocommerce/';
 
+	/**
+	 * Returns the Ecomiq address.
+	 *
+	 * @return string
+	 */
 	public static function server() {
 		$settings = get_option( self::SETTINGS_OPTION, array() );
 		if ( is_array( $settings ) && ! empty( $settings['server'] ) ) {
@@ -20,6 +33,13 @@ final class Connection {
 		return self::DEFAULT_SERVER;
 	}
 
+	/**
+	 * Saves the Ecomiq address.
+	 *
+	 * @param string $value Address.
+	 *
+	 * @return true|\WP_Error
+	 */
 	public static function save_server( $value ) {
 		$server = self::origin( trim( (string) $value ) );
 		if ( null === $server ) {
@@ -33,6 +53,11 @@ final class Connection {
 		return true;
 	}
 
+	/**
+	 * Returns the current connection with its key details.
+	 *
+	 * @return array|null
+	 */
 	public static function current() {
 		$connection = get_option( self::OPTION );
 		if ( ! is_array( $connection ) || empty( $connection['key_id'] ) ) {
@@ -51,6 +76,15 @@ final class Connection {
 		return $connection;
 	}
 
+	/**
+	 * Creates the API key for Ecomiq and replaces the previous one.
+	 *
+	 * @param int    $user_id    User who owns the key.
+	 * @param string $store_name Store name in Ecomiq.
+	 * @param string $store_url  Store URL in Ecomiq.
+	 *
+	 * @return array|\WP_Error Keys or the error.
+	 */
 	public static function connect( $user_id, $store_name, $store_url ) {
 		$previous = get_option( self::OPTION );
 		$key      = self::create_key( $user_id );
@@ -74,9 +108,13 @@ final class Connection {
 			),
 			false
 		);
+		Activity::record( 'connected', self::user_name( $user_id ) );
 		return $key;
 	}
 
+	/**
+	 * Deletes the API key and the Ecomiq webhooks.
+	 */
 	public static function disconnect() {
 		$connection = get_option( self::OPTION );
 		if ( is_array( $connection ) && ! empty( $connection['key_id'] ) ) {
@@ -84,21 +122,50 @@ final class Connection {
 		}
 		self::delete_webhooks();
 		delete_option( self::OPTION );
+		Activity::record( 'disconnected', self::user_name( get_current_user_id() ) );
 	}
 
+	/**
+	 * Removes everything the plugin stored.
+	 */
 	public static function uninstall() {
-		global $wpdb;
 		self::disconnect();
 		delete_option( self::SETTINGS_OPTION );
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_' . Authorization::TRANSIENT_PREFIX ) . '%',
-				$wpdb->esc_like( '_transient_timeout_' . Authorization::TRANSIENT_PREFIX ) . '%'
-			)
-		);
+		delete_option( Activity::OPTION );
+		delete_metadata( 'user', 0, Admin::DISMISSED_META, '', true );
 	}
 
+	/**
+	 * Returns the hashed consumer key of the connection.
+	 *
+	 * @return string
+	 */
+	public static function key_hash() {
+		global $wpdb;
+		$connection = get_option( self::OPTION );
+		if ( ! is_array( $connection ) || empty( $connection['key_id'] ) ) {
+			return '';
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WooCommerce has no API for REST API keys.
+		$hash = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT consumer_key FROM {$wpdb->prefix}woocommerce_api_keys WHERE key_id = %d",
+				(int) $connection['key_id']
+			)
+		);
+		if ( ! is_string( $hash ) ) {
+			return '';
+		}
+		return $hash;
+	}
+
+	/**
+	 * Returns the origin of an address, or null if it is not a valid Ecomiq address.
+	 *
+	 * @param string $value Address.
+	 *
+	 * @return string|null
+	 */
 	public static function origin( $value ) {
 		$parts = wp_parse_url( $value );
 		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
@@ -122,6 +189,28 @@ final class Connection {
 		return $origin;
 	}
 
+	/**
+	 * Returns a user's display name.
+	 *
+	 * @param int $user_id User ID.
+	 *
+	 * @return string
+	 */
+	private static function user_name( $user_id ) {
+		$user = get_userdata( (int) $user_id );
+		if ( ! $user ) {
+			return '';
+		}
+		return $user->display_name;
+	}
+
+	/**
+	 * Whether a host is a local development host.
+	 *
+	 * @param string $host Host.
+	 *
+	 * @return bool
+	 */
 	private static function is_local( $host ) {
 		$host = trim( $host, '[]' );
 		if ( in_array( $host, array( 'localhost', '127.0.0.1', '::1' ), true ) ) {
@@ -130,8 +219,16 @@ final class Connection {
 		return '.localhost' === substr( $host, -10 ) || '.test' === substr( $host, -5 );
 	}
 
+	/**
+	 * Returns an API key row.
+	 *
+	 * @param int $key_id Key ID.
+	 *
+	 * @return object|null
+	 */
 	private static function key( $key_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WooCommerce has no API for REST API keys.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT key_id, truncated_key, last_access FROM {$wpdb->prefix}woocommerce_api_keys WHERE key_id = %d",
@@ -144,11 +241,19 @@ final class Connection {
 		return $row;
 	}
 
+	/**
+	 * Creates a read and write API key.
+	 *
+	 * @param int $user_id User ID.
+	 *
+	 * @return array|\WP_Error
+	 */
 	private static function create_key( $user_id ) {
 		global $wpdb;
 		$consumer_key    = 'ck_' . wc_rand_hash();
 		$consumer_secret = 'cs_' . wc_rand_hash();
-		$inserted        = $wpdb->insert(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- WooCommerce has no API for REST API keys.
+		$inserted = $wpdb->insert(
 			$wpdb->prefix . 'woocommerce_api_keys',
 			array(
 				'user_id'         => (int) $user_id,
@@ -170,11 +275,20 @@ final class Connection {
 		);
 	}
 
+	/**
+	 * Deletes an API key.
+	 *
+	 * @param int $key_id Key ID.
+	 */
 	private static function delete_key( $key_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WooCommerce has no API for REST API keys.
 		$wpdb->delete( $wpdb->prefix . 'woocommerce_api_keys', array( 'key_id' => $key_id ), array( '%d' ) );
 	}
 
+	/**
+	 * Deletes the webhooks Ecomiq created.
+	 */
 	private static function delete_webhooks() {
 		if ( ! function_exists( 'wc_get_webhook' ) || ! class_exists( 'WC_Data_Store' ) ) {
 			return;

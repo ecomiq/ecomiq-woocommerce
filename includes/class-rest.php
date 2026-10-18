@@ -1,17 +1,31 @@
 <?php
+/**
+ * REST routes for the connection.
+ *
+ * @package Ecomiq\WooCommerce
+ */
 
 namespace Ecomiq\WooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * REST routes for the Ecomiq connection.
+ */
 final class Rest {
 
 	const NAMESPACE_V1 = 'ecomiq/v1';
 
+	/**
+	 * Hooks the REST routes.
+	 */
 	public static function register() {
 		add_action( 'rest_api_init', array( __CLASS__, 'routes' ) );
 	}
 
+	/**
+	 * Registers the status and token routes.
+	 */
 	public static function routes() {
 		register_rest_route(
 			self::NAMESPACE_V1,
@@ -55,6 +69,11 @@ final class Rest {
 		);
 	}
 
+	/**
+	 * Returns what Ecomiq needs to start a connection.
+	 *
+	 * @return \WP_REST_Response
+	 */
 	public static function status() {
 		return new \WP_REST_Response(
 			array(
@@ -69,6 +88,13 @@ final class Rest {
 		);
 	}
 
+	/**
+	 * Exchanges an authorization code for the API key.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 *
+	 * @return \WP_REST_Response|\WP_Error
+	 */
 	public static function token( \WP_REST_Request $request ) {
 		if ( ! self::secure() ) {
 			return new \WP_Error( 'https_required', __( 'WordPress does not detect HTTPS, so WooCommerce will reject the API key.', 'ecomiq-for-woocommerce' ), array( 'status' => 400 ) );
@@ -104,10 +130,20 @@ final class Rest {
 		return $response;
 	}
 
+	/**
+	 * Whether the token can be exchanged on this site.
+	 *
+	 * @return bool
+	 */
 	public static function secure() {
 		return is_ssl() || 'local' === wp_get_environment_type();
 	}
 
+	/**
+	 * Returns the decoded site name.
+	 *
+	 * @return string
+	 */
 	private static function site_name() {
 		return wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
 	}

@@ -1,0 +1,9 @@
+{
+	admin off
+	auto_https disable_redirects
+}
+
+https://localhost:8443 {
+	tls /certs/localhost.pem /certs/localhost-key.pem
+	reverse_proxy wordpress:80
+}

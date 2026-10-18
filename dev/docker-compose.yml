@@ -7,6 +7,7 @@ x-database: &database
   WORDPRESS_DB_NAME: wordpress
 
 x-plugin: &plugin ..:/var/www/html/wp-content/plugins/ecomiq-for-woocommerce:ro
+x-mu-plugins: &mu-plugins ./mu-plugins:/var/www/html/wp-content/mu-plugins:ro
 
 services:
   db:
@@ -28,13 +29,30 @@ services:
     environment:
       <<: *database
       WORDPRESS_DEBUG: 1
+      SITE_URL: https://localhost:8443
       WORDPRESS_CONFIG_EXTRA: |
         define( 'WP_ENVIRONMENT_TYPE', 'local' );
         define( 'WP_DEBUG_LOG', true );
         define( 'WP_DEBUG_DISPLAY', false );
+        define( 'WP_HOME', getenv( 'SITE_URL' ) );
+        define( 'WP_SITEURL', getenv( 'SITE_URL' ) );
+        if ( isset( $$_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $$_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+          $$_SERVER['HTTPS'] = 'on';
+        }
     volumes:
       - wordpress:/var/www/html
       - *plugin
+      - *mu-plugins
+
+  https:
+    image: caddy:2.8-alpine
+    depends_on:
+      - wordpress
+    ports:
+      - 127.0.0.1:8443:8443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro
 
   cli:
     image: wordpress:cli-php8.3
@@ -48,6 +66,7 @@ services:
     volumes:
       - wordpress:/var/www/html
       - *plugin
+      - *mu-plugins
 
 volumes:
   db:

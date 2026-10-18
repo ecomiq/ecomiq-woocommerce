@@ -92,3 +92,46 @@
 .ecomiq .description {
 	margin-top: 8px;
 }
+
+.ecomiq-activity {
+	max-width: 560px;
+	margin-top: 24px;
+}
+
+.ecomiq-activity-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 8px;
+}
+
+.ecomiq-activity-head h2 {
+	margin: 0;
+	font-size: 14px;
+}
+
+.ecomiq-activity td {
+	vertical-align: top;
+}
+
+.ecomiq-activity-when {
+	width: 110px;
+	color: #50575e;
+	white-space: nowrap;
+}
+
+.ecomiq-activity-what {
+	display: block;
+	font-weight: 500;
+}
+
+.ecomiq-activity-detail {
+	display: block;
+	color: #50575e;
+	overflow-wrap: anywhere;
+}
+
+.ecomiq-activity-failed .ecomiq-activity-what {
+	color: #b32d2e;
+}
