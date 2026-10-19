@@ -1,0 +1,41 @@
+name: Publish - Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish the plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check the version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          grep -qE "^ \* Version: +${version}$" ecomiq-for-woocommerce.php || { echo "::error::The plugin header is not ${version}"; exit 1; }
+          grep -qF "const VERSION = '${version}';" ecomiq-for-woocommerce.php || { echo "::error::The VERSION constant is not ${version}"; exit 1; }
+          grep -qE "^Stable tag: ${version}$" readme.txt || { echo "::error::readme.txt Stable tag is not ${version}"; exit 1; }
+          grep -qE " - version ${version}$" changelog.txt || { echo "::error::changelog.txt has no entry for ${version}"; exit 1; }
+
+      - name: Build the zip
+        run: sh bin/build.sh
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v=" - version ${version}" 'index($0, v) { found = 1; next } found && /^$/ { exit } found' changelog.txt > notes.md
+          gh release create "$GITHUB_REF_NAME" dist/ecomiq-for-woocommerce.zip \
+            --title "Ecomiq for WooCommerce ${version}" \
+            --notes-file notes.md \
+            --latest

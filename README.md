@@ -1,86 +1,96 @@
+<img src="marketplace/icon.png" alt="Ecomiq" width="64">
+
 # Ecomiq para WooCommerce
 
-Plugin de WordPress que conecta una tienda WooCommerce con Ecomiq sin copiar claves de API.
+Conecta tu tienda WooCommerce con [Ecomiq](https://ecomiq.pe) en un clic, sin copiar claves de API.
 
-- **WooCommerce → Ecomiq**: conectar, aprobar, ver el estado (tienda en Ecomiq, último acceso, clave) y desconectar.
-- **API REST `ecomiq/v1`**: `GET status` y `POST token`.
-- **Desconectar** borra la clave de API y los webhooks que creó Ecomiq. Productos y pedidos no cambian.
-- **Diagnóstico**: HTTPS, enlaces permanentes, que la API REST responda (y quién la bloquea: Cloudflare, Wordfence, Sucuri, ModSecurity…), que el servidor pueda salir hacia Ecomiq, que Ecomiq haya entrado en las últimas 2 horas, webhooks pausados o desactivados, y plugins de seguridad activos con dónde permitir a Ecomiq. Muestra las IP desde las que se conecta Ecomiq (las envía al conectar, `OUTBOUND_IPS` en el servidor).
-- **Webhooks desactivados**: WooCommerce apaga un webhook tras 5 entregas fallidas seguidas. El plugin lo registra en Actividad y lo vuelve a activar a los 15 minutos (solo los de Ecomiq desactivados por fallas).
-- **Actividad**: las últimas 50 escrituras de Ecomiq (productos, stock, precios, pedidos, webhooks), sus solicitudes fallidas y los webhooks que no llegaron. Las lecturas no se anotan; las cubre «Último acceso». Todo va también al registro de WooCommerce con origen `ecomiq` (Estado → Registros).
+**[Descargar la última versión](https://github.com/ecomiq/ecomiq-woocommerce/releases/latest/download/ecomiq-for-woocommerce.zip)** · [Documentación](https://docs.ecomiq.pe) · [Panel de Ecomiq](https://admin.ecomiq.pe)
 
-Requisitos: WordPress 6.5, PHP 7.4, WooCommerce 9.0, HTTPS y enlaces permanentes.
+![El plugin en WooCommerce: conexión, diagnóstico y actividad](docs/images/plugin.png)
 
-Licencia: GPL-2.0-or-later (`LICENSE`).
+## Qué hace
 
-## Conexión
+Ecomiq reúne catálogo, stock, precios y pedidos de todos tus canales en un solo panel. Con este plugin, tu WooCommerce entra a Ecomiq de dos formas:
 
-OAuth 2.0 con PKCE (S256). El plugin hace de servidor de autorización y Ecomiq de cliente.
+- **Como origen.** Ecomiq trae tus productos con variantes, categorías, atributos y fotos, además del stock y los pedidos. Los cambios llegan por webhooks.
+- **Como canal de venta.** Ecomiq publica productos de su catálogo en tu WooCommerce, mantiene al día precio y stock, y recibe los pedidos. En un marketplace, un pedido con productos de varios vendedores se convierte en un pedido por vendedor.
 
-1. Ecomiq lee `GET {tienda}/wp-json/ecomiq/v1/status`: `authorize_url`, `rest_url`, `server` y `https`.
-2. Ecomiq lleva al navegador a `authorize_url` con `redirect_uri`, `state`, `code_challenge`, `code_challenge_method=S256` y `store` (nombre de la tienda en Ecomiq, solo para mostrar).
-3. El plugin solo acepta `redirect_uri` igual a `{server}/connect/woocommerce`. `server` es la dirección de Ecomiq en *Avanzado* (por defecto `https://admin.ecomiq.pe`).
-4. Al aprobar vuelve a `redirect_uri?code=…&state=…`; al cancelar, con `error=access_denied`. El código vence a los 10 minutos y sirve una sola vez.
-5. Ecomiq canjea con `POST {rest_url}ecomiq/v1/token` y `{code, code_verifier, redirect_uri, store_name, store_url}`. Recibe `{consumer_key, consumer_secret, key_id, permissions, name, home_url, rest_url}`.
-6. Hay una clave por tienda: reconectar crea una nueva y borra la anterior.
+En WordPress, el plugin agrega una página en **WooCommerce → Ecomiq** con:
 
-El canje exige HTTPS, igual que la autenticación básica de WooCommerce. Solo un WordPress con `WP_ENVIRONMENT_TYPE` = `local` lo acepta sin HTTPS.
+- **Conexión en un clic.** Apruebas en WordPress y Ecomiq recibe su propia clave de API.
+- **Actividad.** Qué cambió Ecomiq en tu tienda, qué solicitudes fallaron y qué webhooks no llegaron.
+- **Diagnóstico.** Revisa HTTPS, enlaces permanentes, la API REST y los webhooks. Si un firewall o plugin de seguridad bloquea a Ecomiq, dice cuál es y qué IP permitir.
+- **Webhooks que se recuperan solos.** WooCommerce apaga un webhook tras 5 fallas seguidas. El plugin vuelve a activar los de Ecomiq a los 15 minutos.
+- **Desconexión limpia.** Borra la clave de API y los webhooks de Ecomiq. Tus productos y pedidos no cambian.
+
+## Instalación
+
+1. [Descarga el zip](https://github.com/ecomiq/ecomiq-woocommerce/releases/latest/download/ecomiq-for-woocommerce.zip) y súbelo en **Plugins → Añadir nuevo → Subir plugin**. Actívalo.
+2. En Ecomiq, entra a **Canales → Agregar** y elige WooCommerce como origen o como canal de venta.
+3. Escribe la URL de tu tienda y pulsa **Conectar cuenta**.
+
+   ![Conectar WooCommerce desde Ecomiq](docs/images/conectar.png)
+
+4. WordPress muestra qué tienda de Ecomiq pide acceso y con qué usuario. Pulsa **Aprobar**.
+
+   <img src="docs/images/aprobar.png" alt="Aprobación de la conexión en WordPress" width="420">
+
+5. Vuelves a Ecomiq con la tienda conectada y eliges qué productos traer o publicar.
+
+   ![WooCommerce como canal de venta en Ecomiq](docs/images/canales.png)
+
+## Requisitos
+
+| | Versión mínima |
+|---|---|
+| WordPress | 6.5 (probado hasta 7.1) |
+| WooCommerce | 9.0 (probado hasta 11.2) |
+| PHP | 7.4 |
+| Sitio | HTTPS y enlaces permanentes |
+
+## Detalles técnicos
+
+### Conexión
+
+OAuth 2.0 con PKCE (S256). El plugin es el servidor de autorización y Ecomiq el cliente.
+
+1. Ecomiq lee `GET {tienda}/wp-json/ecomiq/v1/status` y lleva al navegador a `authorize_url` con `redirect_uri`, `state`, `code_challenge`, `code_challenge_method=S256` y `store`.
+2. El plugin solo acepta `redirect_uri` igual a `{servidor}/connect/woocommerce`. El servidor es `https://admin.ecomiq.pe` salvo que se cambie en **Avanzado**.
+3. Al aprobar, el navegador vuelve con `code` y `state`. El código vence a los 10 minutos y sirve una sola vez.
+4. Ecomiq canjea el código con `POST {rest_url}ecomiq/v1/token` y su `code_verifier`, y recibe la clave de API.
+
+Hay una clave por tienda: reconectar crea una nueva y borra la anterior. El canje exige HTTPS; solo un WordPress con `WP_ENVIRONMENT_TYPE` = `local` lo acepta sin HTTPS.
+
+### API REST
+
+| Ruta | Uso |
+|---|---|
+| `GET /wp-json/ecomiq/v1/status` | Versión del plugin, nombre de la tienda, `authorize_url`, `rest_url`, servidor de Ecomiq y si hay HTTPS. |
+| `POST /wp-json/ecomiq/v1/token` | Canjea el código de autorización por la clave de API. |
+
+### Qué guarda en tu tienda
+
+- Una clave de API de WooCommerce de lectura y escritura, a nombre del usuario que aprobó.
+- Los webhooks de productos y pedidos que registra Ecomiq (`product.*`, `order.*`).
+- Las opciones `ecomiq_connection`, `ecomiq_settings` y `ecomiq_activity` (últimos 50 eventos). La actividad también va al registro de WooCommerce con origen `ecomiq`.
+
+Al desinstalar el plugin se borran la clave, los webhooks y las opciones.
+
+### Privacidad
+
+Ecomiq lee y actualiza productos, stock, precios y pedidos, incluidos nombre, correo, teléfono y direcciones del cliente de cada pedido. El plugin agrega ese texto a la guía de privacidad de WordPress. Ecomiq trata los datos según su [política de privacidad](https://ecomiq.pe/privacidad).
+
+## Enlaces
+
+- [Ecomiq](https://ecomiq.pe): el sitio, con [precios](https://ecomiq.pe/precios) y [contacto](https://ecomiq.pe/contacto).
+- [Panel de Ecomiq](https://admin.ecomiq.pe): donde conectas y administras tus canales.
+- [Documentación](https://docs.ecomiq.pe): guías y referencia de la API.
+- [Términos](https://ecomiq.pe/terminos) y [privacidad](https://ecomiq.pe/privacidad).
 
 ## Desarrollo
 
-WordPress con WooCommerce en https://localhost:8443 (usuario `admin`, contraseña `admin`), con el plugin montado desde este repo. El HTTPS lo da un Caddy con un certificado de mkcert: la CA de `mkcert -install` o la de `vite-plugin-mkcert` del admin, así que el navegador y la API local de Ecomiq lo aceptan.
+Entorno local, datos de prueba, revisión y cómo sacar una versión: [docs/desarrollo.md](docs/desarrollo.md).
 
-```bash
-./dev/setup.sh
-```
+## Licencia
 
-Para probar con un Ecomiq local, en WooCommerce → Ecomiq → Avanzado pon `https://localhost:3001`.
-
-Los webhooks apuntan a `API_URL` del servidor. En local, llévalos a Api.Admin (`http://host.docker.internal:8004`); `dev/mu-plugins/ecomiq-dev.php` deja a WooCommerce enviarlos a ese host y puerto. La conciliación diaria de Ecomiq los vuelve a `API_URL`.
-
-```bash
-./dev/local-webhooks.sh
-```
-
-Carga masiva (productos `BULK-WOO-#####` con marca, color, categoría y foto) y actualización masiva de precio y stock; conviene pausar los webhooks de Ecomiq mientras se crean:
-
-```bash
-docker compose -f dev/docker-compose.yml run --rm cli wp eval-file wp-content/plugins/ecomiq-for-woocommerce/dev/fixtures/bulk.php 1000 1
-docker compose -f dev/docker-compose.yml run --rm cli wp eval-file wp-content/plugins/ecomiq-for-woocommerce/dev/fixtures/bulk-update.php 1000 1 1
-```
-
-Catálogo de prueba (producto simple con galería, producto variable con 4 variantes y fotos por color, categorías anidadas, etiquetas y atributos globales):
-
-```bash
-docker compose -f dev/docker-compose.yml run --rm cli wp eval-file wp-content/plugins/ecomiq-for-woocommerce/dev/fixtures/catalog.php <carpeta con mochila-1.png, mochila-2.png, polo.png, polo-rojo.png, polo-azul.png>
-```
-
-Zip para instalar (`dist/ecomiq-for-woocommerce.zip`):
-
-```bash
-./bin/build.sh
-```
-
-Las traducciones salen de `languages/ecomiq-for-woocommerce-es_ES.po`; `bin/translations.py` genera los `.l10n.php` de cada variante de español y avisa si falta algún texto.
-
-Apagar y borrar el entorno:
-
-```bash
-docker compose -f dev/docker-compose.yml down -v
-```
-
-## Publicación
-
-Antes de subir una versión a la tienda de Woo:
-
-```bash
-composer install && composer lint
-./dev/fresh.sh
-./bin/build.sh
-```
-
-- `composer lint`: PHPCS con WooCommerce-Core completo (docblocks incluidos) y PHPCompatibility desde PHP 7.4. Plugin Check solo deja el aviso de `load_plugin_textdomain`, que hace falta porque las traducciones van dentro del plugin.
-- `./dev/fresh.sh`: instala desde cero en PHP 7.4 + WP 7.0 + WC 11.1 y en PHP 8.4 + WP 7.1 + WC 11.2. Activa, conecta con PKCE, desconecta y desinstala. Falla si queda algo en la base o hay avisos en `debug.log`.
-- `changelog.txt` sigue el formato de Woo (`AAAA-MM-DD - version X.Y.Z`, `* New - …`). Cada versión sube `Version`, `VERSION`, `Stable tag` y el changelog.
-- `marketplace/`: textos de la ficha, documentación, instrucciones para los revisores e ícono de 160×160.
-- No agregar el encabezado `Woo:`; lo pone Woo al publicar.
+GPL-2.0-or-later. Ver [LICENSE](LICENSE).
