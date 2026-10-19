@@ -79,13 +79,14 @@ final class Connection {
 	/**
 	 * Creates the API key for Ecomiq and replaces the previous one.
 	 *
-	 * @param int    $user_id    User who owns the key.
-	 * @param string $store_name Store name in Ecomiq.
-	 * @param string $store_url  Store URL in Ecomiq.
+	 * @param int      $user_id    User who owns the key.
+	 * @param string   $store_name Store name in Ecomiq.
+	 * @param string   $store_url    Store URL in Ecomiq.
+	 * @param string[] $outbound_ips IP addresses Ecomiq connects from.
 	 *
 	 * @return array|\WP_Error Keys or the error.
 	 */
-	public static function connect( $user_id, $store_name, $store_url ) {
+	public static function connect( $user_id, $store_name, $store_url, array $outbound_ips = array() ) {
 		$previous = get_option( self::OPTION );
 		$key      = self::create_key( $user_id );
 		if ( is_wp_error( $key ) ) {
@@ -105,9 +106,11 @@ final class Connection {
 				'connected_at' => time(),
 				'store_name'   => $store_name,
 				'store_url'    => $store_url,
+				'outbound_ips' => self::ip_list( $outbound_ips ),
 			),
 			false
 		);
+		Diagnostics::reset();
 		Activity::record( 'connected', self::user_name( $user_id ) );
 		return $key;
 	}
@@ -132,6 +135,10 @@ final class Connection {
 		self::disconnect();
 		delete_option( self::SETTINGS_OPTION );
 		delete_option( Activity::OPTION );
+		delete_transient( Diagnostics::TRANSIENT );
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( Activity::REACTIVATE_HOOK );
+		}
 		delete_metadata( 'user', 0, Admin::DISMISSED_META, '', true );
 	}
 
@@ -187,6 +194,29 @@ final class Connection {
 			$origin .= ':' . (int) $parts['port'];
 		}
 		return $origin;
+	}
+
+	/**
+	 * Keeps the valid IP addresses and ranges of a list.
+	 *
+	 * @param array $values IP addresses or CIDR ranges.
+	 *
+	 * @return string[]
+	 */
+	private static function ip_list( array $values ) {
+		$ips = array();
+		foreach ( $values as $value ) {
+			$value = trim( (string) $value );
+			$parts = explode( '/', $value, 2 );
+			if ( false === filter_var( $parts[0], FILTER_VALIDATE_IP ) ) {
+				continue;
+			}
+			if ( isset( $parts[1] ) && ( ! ctype_digit( $parts[1] ) || (int) $parts[1] > 128 ) ) {
+				continue;
+			}
+			$ips[] = $value;
+		}
+		return array_slice( array_values( array_unique( $ips ) ), 0, 20 );
 	}
 
 	/**

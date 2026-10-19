@@ -5,6 +5,8 @@ Plugin de WordPress que conecta una tienda WooCommerce con Ecomiq sin copiar cla
 - **WooCommerce → Ecomiq**: conectar, aprobar, ver el estado (tienda en Ecomiq, último acceso, clave) y desconectar.
 - **API REST `ecomiq/v1`**: `GET status` y `POST token`.
 - **Desconectar** borra la clave de API y los webhooks que creó Ecomiq. Productos y pedidos no cambian.
+- **Diagnóstico**: HTTPS, enlaces permanentes, que la API REST responda (y quién la bloquea: Cloudflare, Wordfence, Sucuri, ModSecurity…), que el servidor pueda salir hacia Ecomiq, que Ecomiq haya entrado en las últimas 2 horas, webhooks pausados o desactivados, y plugins de seguridad activos con dónde permitir a Ecomiq. Muestra las IP desde las que se conecta Ecomiq (las envía al conectar, `OUTBOUND_IPS` en el servidor).
+- **Webhooks desactivados**: WooCommerce apaga un webhook tras 5 entregas fallidas seguidas. El plugin lo registra en Actividad y lo vuelve a activar a los 15 minutos (solo los de Ecomiq desactivados por fallas).
 - **Actividad**: las últimas 50 escrituras de Ecomiq (productos, stock, precios, pedidos, webhooks), sus solicitudes fallidas y los webhooks que no llegaron. Las lecturas no se anotan; las cubre «Último acceso». Todo va también al registro de WooCommerce con origen `ecomiq` (Estado → Registros).
 
 Requisitos: WordPress 6.5, PHP 7.4, WooCommerce 9.0, HTTPS y enlaces permanentes.
@@ -38,6 +40,13 @@ Los webhooks apuntan a `API_URL` del servidor. En local, llévalos a Api.Admin (
 
 ```bash
 ./dev/local-webhooks.sh
+```
+
+Carga masiva (productos `BULK-WOO-#####` con marca, color, categoría y foto) y actualización masiva de precio y stock; conviene pausar los webhooks de Ecomiq mientras se crean:
+
+```bash
+docker compose -f dev/docker-compose.yml run --rm cli wp eval-file wp-content/plugins/ecomiq-for-woocommerce/dev/fixtures/bulk.php 1000 1
+docker compose -f dev/docker-compose.yml run --rm cli wp eval-file wp-content/plugins/ecomiq-for-woocommerce/dev/fixtures/bulk-update.php 1000 1 1
 ```
 
 Catálogo de prueba (producto simple con galería, producto variable con 4 variantes y fotos por color, categorías anidadas, etiquetas y atributos globales):

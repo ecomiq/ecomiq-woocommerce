@@ -202,3 +202,66 @@ msgstr "Descartar este aviso."
 
 msgid "When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. Ecomiq handles this data under its privacy policy: %s"
 msgstr "Al conectar esta tienda, Ecomiq recibe una clave de API de WooCommerce y lee y actualiza productos, stock, precios y pedidos, incluidos el nombre, el correo, el teléfono y las direcciones del cliente de cada pedido. Ecomiq trata estos datos según su política de privacidad: %s"
+
+msgid "%1$s answered instead of the REST API (HTTP %2$d). Ecomiq will be blocked the same way."
+msgstr "%1$s respondió en lugar de la API REST (HTTP %2$d). A Ecomiq lo bloqueará igual."
+
+msgid "A firewall"
+msgstr "Un firewall"
+
+msgid "Check again"
+msgstr "Volver a probar"
+
+msgid "Connection to Ecomiq"
+msgstr "Conexión con Ecomiq"
+
+msgid "Diagnostics"
+msgstr "Diagnóstico"
+
+msgid "Ecomiq access"
+msgstr "Acceso de Ecomiq"
+
+msgid "Ecomiq connects from:"
+msgstr "Ecomiq se conecta desde:"
+
+msgid "Ecomiq has not reached the store for %s. If a firewall protects the store, allow Ecomiq."
+msgstr "Ecomiq no entra a la tienda desde hace %s. Si un firewall protege la tienda, permite a Ecomiq."
+
+msgid "HTTPS"
+msgstr "HTTPS"
+
+msgid "If it blocks Ecomiq, allow its IP addresses in %s."
+msgstr "Si bloquea a Ecomiq, permite sus IP en %s."
+
+msgid "Permalinks"
+msgstr "Enlaces permanentes"
+
+msgid "REST API"
+msgstr "API REST"
+
+msgid "The REST API answered HTTP %d. A security plugin or the host may be restricting it."
+msgstr "La API REST respondió HTTP %d. Un plugin de seguridad o el hosting puede estar restringiéndola."
+
+msgid "This server cannot reach %1$s (%2$s). Changes in the store will not reach Ecomiq until the host allows it."
+msgstr "Este servidor no llega a %1$s (%2$s). Los cambios de la tienda no llegarán a Ecomiq hasta que el hosting lo permita."
+
+msgid "This server could not call itself, so the REST API was not tested. Some hosts block that test."
+msgstr "Este servidor no pudo llamarse a sí mismo y la API REST no se probó. Algunos hostings bloquean esa prueba."
+
+msgid "Webhooks"
+msgstr "Webhooks"
+
+msgid "Webhooks that did not reach Ecomiq in the last 24 hours: %d."
+msgstr "Webhooks que no llegaron a Ecomiq en las últimas 24 horas: %d."
+
+msgid "Ecomiq has not registered its webhooks yet, so it only sees changes on its scheduled checks."
+msgstr "Ecomiq todavía no registró sus webhooks; solo ve los cambios en sus revisiones programadas."
+
+msgid "Ecomiq webhooks paused or disabled: %d. WooCommerce disables a webhook after 5 failed deliveries in a row. Turn them back on in WooCommerce → Settings → Advanced → Webhooks."
+msgstr "Webhooks de Ecomiq pausados o desactivados: %d. WooCommerce desactiva un webhook tras 5 entregas fallidas seguidas. Vuelve a activarlos en WooCommerce → Ajustes → Avanzado → Webhooks."
+
+msgid "WooCommerce disabled an Ecomiq webhook after repeated failures"
+msgstr "WooCommerce desactivó un webhook de Ecomiq tras varias fallas"
+
+msgid "Turned an Ecomiq webhook back on"
+msgstr "Volvió a activar un webhook de Ecomiq"

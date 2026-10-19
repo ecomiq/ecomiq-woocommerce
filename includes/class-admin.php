@@ -36,6 +36,7 @@ final class Admin {
 		add_action( 'admin_post_ecomiq_disconnect', array( __CLASS__, 'disconnect' ) );
 		add_action( 'admin_post_ecomiq_server', array( __CLASS__, 'server' ) );
 		add_action( 'admin_post_ecomiq_dismiss', array( __CLASS__, 'dismiss' ) );
+		add_action( 'admin_post_ecomiq_diagnose', array( __CLASS__, 'diagnose' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( FILE ), array( __CLASS__, 'action_links' ) );
 	}
 
@@ -142,12 +143,65 @@ final class Admin {
 			self::render_disconnect();
 		} elseif ( null !== $connection ) {
 			self::render_connected( $connection );
+			self::render_diagnostics();
 			self::render_activity();
 		} else {
 			self::render_connect();
+			self::render_diagnostics();
 			self::render_activity();
 		}
 		echo '</div>';
+	}
+
+	/**
+	 * Renders the connection diagnostics.
+	 */
+	private static function render_diagnostics() {
+		$icons = array(
+			'ok'      => 'yes-alt',
+			'warning' => 'warning',
+			'error'   => 'dismiss',
+			'info'    => 'shield',
+			'unknown' => 'editor-help',
+		);
+		echo '<div class="ecomiq-diagnostics">';
+		echo '<div class="ecomiq-activity-head"><h2>' . esc_html__( 'Diagnostics', 'ecomiq-for-woocommerce' ) . '</h2>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		echo '<input type="hidden" name="action" value="ecomiq_diagnose">';
+		wp_nonce_field( 'ecomiq_diagnose' );
+		echo '<button type="submit" class="button-link">' . esc_html__( 'Check again', 'ecomiq-for-woocommerce' ) . '</button>';
+		echo '</form></div>';
+		echo '<table class="widefat"><tbody>';
+		$firewall = false;
+		foreach ( Diagnostics::checks() as $check ) {
+			if ( 'info' === $check['status'] || 'error' === $check['status'] || 'warning' === $check['status'] ) {
+				$firewall = true;
+			}
+			echo '<tr class="' . esc_attr( 'ecomiq-check-' . $check['status'] ) . '">';
+			echo '<td class="ecomiq-check-icon"><span class="dashicons dashicons-' . esc_attr( $icons[ $check['status'] ] ) . '" aria-hidden="true"></span></td>';
+			echo '<td><span class="ecomiq-activity-what">' . esc_html( $check['label'] ) . '</span>';
+			if ( '' !== $check['detail'] ) {
+				echo '<span class="ecomiq-activity-detail">' . esc_html( $check['detail'] ) . '</span>';
+			}
+			echo '</td></tr>';
+		}
+		echo '</tbody></table>';
+		$ips = Diagnostics::outbound_ips();
+		if ( $firewall && ! empty( $ips ) ) {
+			echo '<p class="ecomiq-ips">' . esc_html__( 'Ecomiq connects from:', 'ecomiq-for-woocommerce' ) . ' <code>' . esc_html( implode( ', ', $ips ) ) . '</code></p>';
+		}
+		echo '</div>';
+	}
+
+	/**
+	 * Runs the diagnostics again.
+	 */
+	public static function diagnose() {
+		self::guard();
+		check_admin_referer( 'ecomiq_diagnose' );
+		Diagnostics::reset();
+		wp_safe_redirect( self::url() );
+		exit;
 	}
 
 	/**

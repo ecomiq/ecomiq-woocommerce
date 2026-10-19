@@ -18,6 +18,10 @@ final class Activity {
 	const LIMIT  = 50;
 	const SOURCE = 'ecomiq';
 
+	const REACTIVATE_HOOK  = 'ecomiq_reactivate_webhook';
+	const REACTIVATE_DELAY = 900;
+	const REPEAT_WINDOW    = 60;
+
 	const STOCK_FIELDS = array( 'stock_quantity', 'manage_stock', 'stock_status', 'backorders' );
 	const PRICE_FIELDS = array( 'regular_price', 'sale_price', 'date_on_sale_from', 'date_on_sale_to', 'date_on_sale_from_gmt', 'date_on_sale_to_gmt' );
 
@@ -34,6 +38,8 @@ final class Activity {
 	public static function register() {
 		add_filter( 'rest_post_dispatch', array( __CLASS__, 'request' ), 10, 3 );
 		add_action( 'woocommerce_webhook_delivery', array( __CLASS__, 'delivery' ), 10, 5 );
+		add_action( 'woocommerce_webhook_disabled_due_delivery_failures', array( __CLASS__, 'disabled' ) );
+		add_action( self::REACTIVATE_HOOK, array( __CLASS__, 'reactivate' ) );
 	}
 
 	/**
@@ -74,6 +80,9 @@ final class Activity {
 	 */
 	public static function record( $type, $subject = '', $failed = false ) {
 		$events = self::events();
+		if ( ! empty( $events ) && $type === $events[0]['type'] && (string) $subject === $events[0]['subject'] && time() - (int) $events[0]['time'] < self::REPEAT_WINDOW ) {
+			return;
+		}
 		array_unshift(
 			$events,
 			array(
@@ -106,22 +115,24 @@ final class Activity {
 	 */
 	public static function label( $type ) {
 		$labels = array(
-			'connected'       => __( 'Connected to Ecomiq', 'ecomiq-for-woocommerce' ),
-			'disconnected'    => __( 'Disconnected from Ecomiq', 'ecomiq-for-woocommerce' ),
-			'product_created' => __( 'Created a product', 'ecomiq-for-woocommerce' ),
-			'product_updated' => __( 'Updated a product', 'ecomiq-for-woocommerce' ),
-			'stock_updated'   => __( 'Updated stock', 'ecomiq-for-woocommerce' ),
-			'price_updated'   => __( 'Updated a price', 'ecomiq-for-woocommerce' ),
-			'status_updated'  => __( 'Changed a product status', 'ecomiq-for-woocommerce' ),
-			'product_deleted' => __( 'Deleted a product', 'ecomiq-for-woocommerce' ),
-			'products_batch'  => __( 'Updated products in bulk', 'ecomiq-for-woocommerce' ),
-			'order_created'   => __( 'Created an order', 'ecomiq-for-woocommerce' ),
-			'order_updated'   => __( 'Updated an order', 'ecomiq-for-woocommerce' ),
-			'webhook_created' => __( 'Registered a webhook', 'ecomiq-for-woocommerce' ),
-			'webhook_deleted' => __( 'Removed a webhook', 'ecomiq-for-woocommerce' ),
-			'data_changed'    => __( 'Changed store data', 'ecomiq-for-woocommerce' ),
-			'request_failed'  => __( 'A request failed', 'ecomiq-for-woocommerce' ),
-			'webhook_failed'  => __( 'A webhook did not reach Ecomiq', 'ecomiq-for-woocommerce' ),
+			'connected'        => __( 'Connected to Ecomiq', 'ecomiq-for-woocommerce' ),
+			'disconnected'     => __( 'Disconnected from Ecomiq', 'ecomiq-for-woocommerce' ),
+			'product_created'  => __( 'Created a product', 'ecomiq-for-woocommerce' ),
+			'product_updated'  => __( 'Updated a product', 'ecomiq-for-woocommerce' ),
+			'stock_updated'    => __( 'Updated stock', 'ecomiq-for-woocommerce' ),
+			'price_updated'    => __( 'Updated a price', 'ecomiq-for-woocommerce' ),
+			'status_updated'   => __( 'Changed a product status', 'ecomiq-for-woocommerce' ),
+			'product_deleted'  => __( 'Deleted a product', 'ecomiq-for-woocommerce' ),
+			'products_batch'   => __( 'Updated products in bulk', 'ecomiq-for-woocommerce' ),
+			'order_created'    => __( 'Created an order', 'ecomiq-for-woocommerce' ),
+			'order_updated'    => __( 'Updated an order', 'ecomiq-for-woocommerce' ),
+			'webhook_created'  => __( 'Registered a webhook', 'ecomiq-for-woocommerce' ),
+			'webhook_deleted'  => __( 'Removed a webhook', 'ecomiq-for-woocommerce' ),
+			'data_changed'     => __( 'Changed store data', 'ecomiq-for-woocommerce' ),
+			'request_failed'   => __( 'A request failed', 'ecomiq-for-woocommerce' ),
+			'webhook_failed'   => __( 'A webhook did not reach Ecomiq', 'ecomiq-for-woocommerce' ),
+			'webhook_disabled' => __( 'WooCommerce disabled an Ecomiq webhook after repeated failures', 'ecomiq-for-woocommerce' ),
+			'webhook_enabled'  => __( 'Turned an Ecomiq webhook back on', 'ecomiq-for-woocommerce' ),
 		);
 		if ( isset( $labels[ $type ] ) ) {
 			return $labels[ $type ];
@@ -164,6 +175,43 @@ final class Activity {
 	}
 
 	/**
+	 * Records an Ecomiq webhook that WooCommerce disabled and schedules turning it back on.
+	 *
+	 * @param int $webhook_id Webhook ID.
+	 */
+	public static function disabled( $webhook_id ) {
+		$webhook = self::ecomiq_webhook( $webhook_id );
+		if ( null === $webhook ) {
+			return;
+		}
+		if ( function_exists( 'as_next_scheduled_action' ) && as_next_scheduled_action( self::REACTIVATE_HOOK, array( 'webhook_id' => (int) $webhook_id ), self::SOURCE ) ) {
+			return;
+		}
+		self::record( 'webhook_disabled', $webhook->get_topic(), true );
+		Diagnostics::reset();
+		if ( function_exists( 'as_schedule_single_action' ) ) {
+			as_schedule_single_action( time() + self::REACTIVATE_DELAY, self::REACTIVATE_HOOK, array( 'webhook_id' => (int) $webhook_id ), self::SOURCE );
+		}
+	}
+
+	/**
+	 * Turns an Ecomiq webhook back on if WooCommerce disabled it after failures.
+	 *
+	 * @param int $webhook_id Webhook ID.
+	 */
+	public static function reactivate( $webhook_id ) {
+		$webhook = self::ecomiq_webhook( $webhook_id );
+		if ( null === $webhook || 'disabled' !== $webhook->get_status() || null === Connection::current() ) {
+			return;
+		}
+		$webhook->set_failure_count( 0 );
+		$webhook->set_status( 'active' );
+		$webhook->save();
+		self::record( 'webhook_enabled', $webhook->get_topic() );
+		Diagnostics::reset();
+	}
+
+	/**
 	 * Records Ecomiq webhooks that did not reach Ecomiq.
 	 *
 	 * @param array           $http_args  Request arguments.
@@ -188,6 +236,24 @@ final class Activity {
 		if ( $code < 200 || $code >= 300 ) {
 			self::record( 'webhook_failed', $webhook->get_topic() . ' · HTTP ' . $code, true );
 		}
+	}
+
+	/**
+	 * Returns an Ecomiq webhook by ID, or null for other webhooks.
+	 *
+	 * @param int $webhook_id Webhook ID.
+	 *
+	 * @return \WC_Webhook|null
+	 */
+	private static function ecomiq_webhook( $webhook_id ) {
+		if ( ! function_exists( 'wc_get_webhook' ) ) {
+			return null;
+		}
+		$webhook = wc_get_webhook( (int) $webhook_id );
+		if ( ! $webhook || 0 !== strpos( $webhook->get_name(), Connection::WEBHOOK_PREFIX ) ) {
+			return null;
+		}
+		return $webhook;
 	}
 
 	/**

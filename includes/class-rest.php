@@ -64,6 +64,11 @@ final class Rest {
 						'type'    => 'string',
 						'default' => '',
 					),
+					'outbound_ips'  => array(
+						'type'    => 'array',
+						'items'   => array( 'type' => 'string' ),
+						'default' => array(),
+					),
 				),
 			)
 		);
@@ -110,7 +115,8 @@ final class Rest {
 		$key = Connection::connect(
 			$user_id,
 			sanitize_text_field( (string) $request->get_param( 'store_name' ) ),
-			esc_url_raw( (string) $request->get_param( 'store_url' ) )
+			esc_url_raw( (string) $request->get_param( 'store_url' ) ),
+			(array) $request->get_param( 'outbound_ips' )
 		);
 		if ( is_wp_error( $key ) ) {
 			return $key;

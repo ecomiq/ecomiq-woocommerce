@@ -135,3 +135,43 @@
 .ecomiq-activity-failed .ecomiq-activity-what {
 	color: #b32d2e;
 }
+
+.ecomiq-diagnostics {
+	max-width: 560px;
+	margin-top: 24px;
+}
+
+.ecomiq-diagnostics form {
+	margin: 0;
+}
+
+.ecomiq-diagnostics td {
+	vertical-align: top;
+}
+
+.ecomiq-check-icon {
+	width: 20px;
+}
+
+.ecomiq-check-ok .dashicons {
+	color: #00a32a;
+}
+
+.ecomiq-check-warning .dashicons {
+	color: #dba617;
+}
+
+.ecomiq-check-error .dashicons,
+.ecomiq-check-error .ecomiq-activity-what {
+	color: #b32d2e;
+}
+
+.ecomiq-check-info .dashicons,
+.ecomiq-check-unknown .dashicons {
+	color: #50575e;
+}
+
+.ecomiq-ips {
+	margin: 8px 0 0;
+	color: #50575e;
+}

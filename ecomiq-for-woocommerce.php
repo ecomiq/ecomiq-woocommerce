@@ -28,6 +28,7 @@ const FILE    = __FILE__;
 
 require_once __DIR__ . '/includes/class-connection.php';
 require_once __DIR__ . '/includes/class-activity.php';
+require_once __DIR__ . '/includes/class-diagnostics.php';
 require_once __DIR__ . '/includes/class-authorization.php';
 require_once __DIR__ . '/includes/class-rest.php';
 require_once __DIR__ . '/includes/class-admin.php';

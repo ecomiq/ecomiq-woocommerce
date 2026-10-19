@@ -4,3 +4,5 @@
 * New - One-click connection with Ecomiq, with approval in WordPress.
 * New - Activity log of the changes Ecomiq makes, its failed requests and the webhooks that do not reach it.
 * New - Disconnect deletes the API key and the webhooks Ecomiq created.
+* New - Diagnostics for HTTPS, permalinks, REST API blocks, firewalls and webhooks, with the IP addresses Ecomiq connects from.
+* New - Ecomiq webhooks that WooCommerce disables after failures are turned back on after 15 minutes.
