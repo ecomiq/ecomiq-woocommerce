@@ -265,3 +265,27 @@ msgstr "WooCommerce desactivó un webhook de Ecomiq tras varias fallas"
 
 msgid "Turned an Ecomiq webhook back on"
 msgstr "Volvió a activar un webhook de Ecomiq"
+
+msgid "Ecomiq"
+msgstr "Ecomiq"
+
+msgid "Marks the orders that Ecomiq creates for sales on other channels. It never shows at checkout and charges nothing."
+msgstr "Identifica los pedidos que Ecomiq crea por ventas en otros canales. Nunca aparece al pagar y no cobra nada."
+
+msgid "Sold on another channel"
+msgstr "Vendido en otro canal"
+
+msgid "Shipping of the orders that Ecomiq creates for sales on other channels. It never shows at checkout."
+msgstr "Envío de los pedidos que Ecomiq crea por ventas en otros canales. Nunca aparece al pagar."
+
+msgid "Shipped by another channel"
+msgstr "Enviado por otro canal"
+
+msgid "Ecomiq created this order for a sale on another channel."
+msgstr "Ecomiq creó este pedido por una venta en otro canal."
+
+msgid "Sold on %s. Ecomiq created this order."
+msgstr "Vendido en %s. Ecomiq creó este pedido."
+
+msgid "Sold on %1$s, order %2$s. Ecomiq created this order."
+msgstr "Vendido en %1$s, pedido %2$s. Ecomiq creó este pedido."

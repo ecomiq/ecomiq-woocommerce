@@ -19,6 +19,15 @@ final class Connection {
 	const DEFAULT_SERVER  = 'https://admin.ecomiq.pe';
 	const WEBHOOK_PREFIX  = 'ecomiq-';
 	const WEBHOOK_PATH    = '/webhooks/woocommerce/';
+	const RELEASE_HOOK    = 'ecomiq_notify_released';
+	const RELEASED_TOPIC  = 'ecomiq.disconnected';
+
+	/**
+	 * Hooks the delivery of release notices.
+	 */
+	public static function register() {
+		add_action( self::RELEASE_HOOK, array( __CLASS__, 'notify_released' ), 10, 3 );
+	}
 
 	/**
 	 * Returns the Ecomiq address.
@@ -94,6 +103,7 @@ final class Connection {
 		}
 		if ( is_array( $previous ) && ! empty( $previous['key_id'] ) ) {
 			self::delete_key( (int) $previous['key_id'] );
+			self::release_webhooks( 'replaced', true );
 		}
 		if ( 0 !== strpos( $store_url, self::server() . '/' ) ) {
 			$store_url = '';
@@ -119,11 +129,8 @@ final class Connection {
 	 * Deletes the API key and the Ecomiq webhooks.
 	 */
 	public static function disconnect() {
-		$connection = get_option( self::OPTION );
-		if ( is_array( $connection ) && ! empty( $connection['key_id'] ) ) {
-			self::delete_key( (int) $connection['key_id'] );
-		}
-		self::delete_webhooks();
+		self::drop_key();
+		self::release_webhooks( 'disconnected', false );
 		delete_option( self::OPTION );
 		Activity::record( 'disconnected', self::user_name( get_current_user_id() ) );
 	}
@@ -132,12 +139,15 @@ final class Connection {
 	 * Removes everything the plugin stored.
 	 */
 	public static function uninstall() {
-		self::disconnect();
+		self::drop_key();
+		self::release_webhooks( 'disconnected', false );
+		delete_option( self::OPTION );
 		delete_option( self::SETTINGS_OPTION );
 		delete_option( Activity::OPTION );
 		delete_transient( Diagnostics::TRANSIENT );
 		if ( function_exists( 'as_unschedule_all_actions' ) ) {
 			as_unschedule_all_actions( Activity::REACTIVATE_HOOK );
+			as_unschedule_all_actions( self::RELEASE_HOOK );
 		}
 		delete_metadata( 'user', 0, Admin::DISMISSED_META, '', true );
 	}
@@ -317,18 +327,37 @@ final class Connection {
 	}
 
 	/**
-	 * Deletes the webhooks Ecomiq created.
+	 * Deletes the API key of the current connection.
 	 */
-	private static function delete_webhooks() {
+	private static function drop_key() {
+		$connection = get_option( self::OPTION );
+		if ( is_array( $connection ) && ! empty( $connection['key_id'] ) ) {
+			self::delete_key( (int) $connection['key_id'] );
+		}
+	}
+
+	/**
+	 * Tells Ecomiq that its connection was released and deletes its webhooks.
+	 *
+	 * Each notice is signed with the secret of the webhook it replaces, so Ecomiq
+	 * can trust it. Ecomiq only uses it as a reason to check its access. A
+	 * replacement queues its notices so the key exchange Ecomiq is waiting on
+	 * is not delayed.
+	 *
+	 * @param string $reason 'disconnected' or 'replaced'.
+	 * @param bool   $later  Whether to send the notices from Action Scheduler.
+	 */
+	private static function release_webhooks( $reason, $later ) {
 		if ( ! function_exists( 'wc_get_webhook' ) || ! class_exists( 'WC_Data_Store' ) ) {
 			return;
 		}
-		$ids = \WC_Data_Store::load( 'webhook' )->search_webhooks(
+		$ids      = \WC_Data_Store::load( 'webhook' )->search_webhooks(
 			array(
 				'search' => self::WEBHOOK_PREFIX,
 				'limit'  => -1,
 			)
 		);
+		$notified = array();
 		foreach ( (array) $ids as $id ) {
 			$webhook = wc_get_webhook( $id );
 			if ( ! $webhook ) {
@@ -337,10 +366,50 @@ final class Connection {
 			if ( 0 !== strpos( $webhook->get_name(), self::WEBHOOK_PREFIX ) ) {
 				continue;
 			}
-			if ( false === strpos( $webhook->get_delivery_url(), self::WEBHOOK_PATH ) ) {
+			$url = $webhook->get_delivery_url();
+			if ( false === strpos( $url, self::WEBHOOK_PATH ) ) {
 				continue;
+			}
+			if ( ! isset( $notified[ $url ] ) && '' !== (string) $webhook->get_secret() ) {
+				$notified[ $url ] = true;
+				$body             = (string) wp_json_encode(
+					array(
+						'reason' => $reason,
+						'time'   => time(),
+					)
+				);
+				$signature        = $webhook->generate_signature( $body );
+				if ( $later && function_exists( 'as_enqueue_async_action' ) ) {
+					as_enqueue_async_action( self::RELEASE_HOOK, array( $url, $body, $signature ), Activity::SOURCE );
+				} else {
+					self::notify_released( $url, $body, $signature );
+				}
 			}
 			$webhook->delete( true );
 		}
+	}
+
+	/**
+	 * Sends a signed release notice to an Ecomiq webhook address.
+	 *
+	 * @param string $url       Webhook delivery address.
+	 * @param string $body      JSON body.
+	 * @param string $signature Signature of the body.
+	 */
+	public static function notify_released( $url, $body, $signature ) {
+		wp_safe_remote_post(
+			(string) $url,
+			array(
+				'timeout'     => 5,
+				'redirection' => 0,
+				'headers'     => array(
+					'Content-Type'           => 'application/json',
+					'X-WC-Webhook-Source'    => home_url( '/' ),
+					'X-WC-Webhook-Topic'     => self::RELEASED_TOPIC,
+					'X-WC-Webhook-Signature' => (string) $signature,
+				),
+				'body'        => (string) $body,
+			)
+		);
 	}
 }

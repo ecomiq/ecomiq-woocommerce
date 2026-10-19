@@ -57,9 +57,42 @@ $webhook = new WC_Webhook();
 $webhook->set_name( 'ecomiq-product.updated' );
 $webhook->set_topic( 'product.updated' );
 $webhook->set_delivery_url( 'https://example.test/webhooks/woocommerce/1' );
+$webhook->set_secret( 'fresh-secret' );
 $webhook->set_status( 'active' );
 $webhook->set_user_id( 1 );
 $webhook->save();
+$sibling = new WC_Webhook();
+$sibling->set_name( 'ecomiq-order.created' );
+$sibling->set_topic( 'order.created' );
+$sibling->set_delivery_url( 'https://example.test/webhooks/woocommerce/1' );
+$sibling->set_secret( 'fresh-secret' );
+$sibling->set_status( 'active' );
+$sibling->set_user_id( 1 );
+$sibling->save();
+
+function ecomiq_release_notices() {
+	$ids     = as_get_scheduled_actions(
+		array(
+			'hook'     => Connection::RELEASE_HOOK,
+			'status'   => ActionScheduler_Store::STATUS_PENDING,
+			'per_page' => 10,
+		),
+		'ids'
+	);
+	$notices = array();
+	foreach ( $ids as $id ) {
+		$notices[] = ActionScheduler::store()->fetch_action( $id )->get_args();
+	}
+	return $notices;
+}
+
+function ecomiq_signed( $notice, $reason ) {
+	$body = json_decode( $notice[1], true );
+	return 'https://example.test/webhooks/woocommerce/1' === $notice[0]
+		&& $reason === $body['reason']
+		&& base64_encode( hash_hmac( 'sha256', $notice[1], 'fresh-secret', true ) ) === $notice[2]
+		&& false === strpos( wp_json_encode( $notice ), 'fresh-secret' );
+}
 
 $events = Activity::events();
 ecomiq_check( 'activity has connected', ! empty( $events ) && 'connected' === $events[0]['type'] );
@@ -74,9 +107,25 @@ ob_start();
 Admin::activation_notice();
 ecomiq_check( 'no notice when connected', '' === ob_get_clean() );
 
+$sent    = array();
+$capture = function ( $pre, $args, $url ) use ( &$sent ) {
+	$sent[] = array( $url, $args['body'], $args['headers']['X-WC-Webhook-Signature'], $args['headers']['X-WC-Webhook-Topic'] );
+	return array(
+		'headers'  => array(),
+		'body'     => '',
+		'response' => array(
+			'code'    => 200,
+			'message' => 'OK',
+		),
+		'cookies'  => array(),
+	);
+};
+add_filter( 'pre_http_request', $capture, 10, 3 );
 Connection::disconnect();
+remove_filter( 'pre_http_request', $capture, 10 );
 ecomiq_check( 'disconnected', null === Connection::current() );
-ecomiq_check( 'webhook removed', ! wc_get_webhook( $webhook->get_id() ) || 0 === $webhook->get_id() || ! get_post( $webhook->get_id() ) );
+ecomiq_check( 'webhooks removed', ! wc_get_webhook( $webhook->get_id() ) && ! wc_get_webhook( $sibling->get_id() ) );
+ecomiq_check( 'one signed notice per address, sent at once', 1 === count( $sent ) && ecomiq_signed( $sent[0], 'disconnected' ) && Connection::RELEASED_TOPIC === $sent[0][3] && array() === ecomiq_release_notices() );
 
 ob_start();
 Admin::activation_notice();
@@ -91,7 +140,20 @@ $webhook->set_user_id( 1 );
 $webhook->save();
 $code = Authorization::issue( $request, 1 );
 $token_req->set_param( 'code', $code );
+ecomiq_check( 'reconnect', 200 === rest_do_request( $token_req )->get_status() );
+
+$replaced = new WC_Webhook();
+$replaced->set_name( 'ecomiq-product.created' );
+$replaced->set_topic( 'product.created' );
+$replaced->set_delivery_url( 'https://example.test/webhooks/woocommerce/1' );
+$replaced->set_secret( 'fresh-secret' );
+$replaced->set_user_id( 1 );
+$replaced->save();
+$code = Authorization::issue( $request, 1 );
+$token_req->set_param( 'code', $code );
 ecomiq_check( 'reconnect for uninstall', 200 === rest_do_request( $token_req )->get_status() );
+$notices = ecomiq_release_notices();
+ecomiq_check( 'replacing releases the old webhooks', ! wc_get_webhook( $replaced->get_id() ) && 1 === count( $notices ) && ecomiq_signed( $notices[0], 'replaced' ) );
 
 if ( $GLOBALS['ecomiq_failed'] > 0 ) {
 	exit( 1 );

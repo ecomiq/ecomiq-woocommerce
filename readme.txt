@@ -20,6 +20,8 @@ This plugin replaces copying API keys by hand:
 2. Approve the connection in your WordPress.
 3. Ecomiq receives a WooCommerce API key for your store and starts syncing.
 
+When you sell a product from this store on another channel, Ecomiq creates the order here with payment and shipping named after the channel where it sold, such as "Shopify". They never show at checkout, charge no shipping, and the buyer gets no emails from your store. An order note says where it was sold, and the Origin column shows the channel.
+
 **Disconnect** deletes the API key and the webhooks Ecomiq created. Your products and orders do not change.
 
 = External service =

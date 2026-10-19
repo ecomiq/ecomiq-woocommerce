@@ -13,3 +13,4 @@ require_once __DIR__ . '/includes/class-diagnostics.php';
 require_once __DIR__ . '/includes/class-admin.php';
 
 \Ecomiq\WooCommerce\Connection::uninstall();
+\Ecomiq\WooCommerce\Webhook_Delivery::uninstall();

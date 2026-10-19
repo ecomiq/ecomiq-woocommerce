@@ -9,6 +9,8 @@ namespace Ecomiq\WooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-webhook-delivery.php';
+
 /**
  * Activity log of what Ecomiq does in the store.
  */
@@ -36,6 +38,7 @@ final class Activity {
 	 * Hooks into REST responses and webhook deliveries.
 	 */
 	public static function register() {
+		Webhook_Delivery::register();
 		add_filter( 'rest_post_dispatch', array( __CLASS__, 'request' ), 10, 3 );
 		add_action( 'woocommerce_webhook_delivery', array( __CLASS__, 'delivery' ), 10, 5 );
 		add_action( 'woocommerce_webhook_disabled_due_delivery_failures', array( __CLASS__, 'disabled' ) );
@@ -230,11 +233,13 @@ final class Activity {
 		}
 		if ( is_wp_error( $response ) ) {
 			self::record( 'webhook_failed', $webhook->get_topic() . ' · ' . $response->get_error_message(), true );
+			Webhook_Delivery::failed( $webhook, $http_args, $response );
 			return;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( $code < 200 || $code >= 300 ) {
 			self::record( 'webhook_failed', $webhook->get_topic() . ' · HTTP ' . $code, true );
+			Webhook_Delivery::failed( $webhook, $http_args, $response );
 		}
 	}
 

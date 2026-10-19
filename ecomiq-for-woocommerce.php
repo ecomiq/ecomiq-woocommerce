@@ -32,6 +32,7 @@ require_once __DIR__ . '/includes/class-diagnostics.php';
 require_once __DIR__ . '/includes/class-authorization.php';
 require_once __DIR__ . '/includes/class-rest.php';
 require_once __DIR__ . '/includes/class-admin.php';
+require_once __DIR__ . '/includes/class-orders.php';
 
 add_action(
 	'before_woocommerce_init',
@@ -57,7 +58,9 @@ add_action(
 			return;
 		}
 		Rest::register();
+		Connection::register();
 		Activity::register();
 		Admin::register();
+		Orders::register();
 	}
 );

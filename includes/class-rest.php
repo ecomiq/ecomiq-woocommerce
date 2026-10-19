@@ -21,10 +21,26 @@ final class Rest {
 	 */
 	public static function register() {
 		add_action( 'rest_api_init', array( __CLASS__, 'routes' ) );
+		add_filter( 'woocommerce_rest_is_request_to_rest_api', array( __CLASS__, 'accepts_api_key' ) );
 	}
 
 	/**
-	 * Registers the status and token routes.
+	 * Lets WooCommerce authenticate the Ecomiq API key on the plugin's private routes.
+	 *
+	 * @param bool $is_rest Whether WooCommerce already treats the request as its REST API.
+	 *
+	 * @return bool
+	 */
+	public static function accepts_api_key( $is_rest ) {
+		if ( $is_rest ) {
+			return true;
+		}
+		$uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		return false !== strpos( $uri, '/' . rest_get_url_prefix() . '/' . self::NAMESPACE_V1 . '/order-statuses' );
+	}
+
+	/**
+	 * Registers the status, order statuses and token routes.
 	 */
 	public static function routes() {
 		register_rest_route(
@@ -34,6 +50,15 @@ final class Rest {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'status' ),
 				'permission_callback' => '__return_true',
+			)
+		);
+		register_rest_route(
+			self::NAMESPACE_V1,
+			'/order-statuses',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( __CLASS__, 'order_statuses' ),
+				'permission_callback' => array( __CLASS__, 'can_manage' ),
 			)
 		);
 		register_rest_route(
@@ -72,6 +97,37 @@ final class Rest {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Whether the current user can manage the store.
+	 *
+	 * @return bool
+	 */
+	public static function can_manage() {
+		return current_user_can( 'manage_woocommerce' );
+	}
+
+	/**
+	 * Returns the order statuses of the store, including the ones other plugins add.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function order_statuses() {
+		$statuses = array();
+		foreach ( wc_get_order_statuses() as $key => $label ) {
+			if ( 0 === strpos( $key, 'wc-' ) ) {
+				$key = substr( $key, 3 );
+			}
+			if ( 'checkout-draft' === $key ) {
+				continue;
+			}
+			$statuses[] = array(
+				'key'   => $key,
+				'label' => $label,
+			);
+		}
+		return new \WP_REST_Response( $statuses );
 	}
 
 	/**

@@ -21,6 +21,8 @@ En WordPress, el plugin agrega una página en **WooCommerce → Ecomiq** con:
 - **Actividad.** Qué cambió Ecomiq en tu tienda, qué solicitudes fallaron y qué webhooks no llegaron.
 - **Diagnóstico.** Revisa HTTPS, enlaces permanentes, la API REST y los webhooks. Si un firewall o plugin de seguridad bloquea a Ecomiq, dice cuál es y qué IP permitir.
 - **Webhooks que se recuperan solos.** WooCommerce apaga un webhook tras 5 fallas seguidas. El plugin vuelve a activar los de Ecomiq a los 15 minutos.
+- **Pedidos de otros canales sin cobros.** Cuando vendes un producto de tu tienda en otro canal, Ecomiq crea el pedido con el pago y el envío a nombre del canal donde se vendió (por ejemplo «Shopify»): no aparecen en tu checkout, no cobran envío y el comprador no recibe correos de tu tienda. Una nota dice dónde se vendió y con qué número, y la columna **Origen** de WooCommerce muestra el canal.
+- **Estados a tu medida.** Si tu tienda usa estados propios (por ejemplo «Despachado»), en Ecomiq eliges qué significa cada uno al recibir pedidos y cuál usar al actualizarlos.
 - **Desconexión limpia.** Borra la clave de API y los webhooks de Ecomiq. Tus productos y pedidos no cambian.
 
 ## Instalación
@@ -67,6 +69,7 @@ Hay una clave por tienda: reconectar crea una nueva y borra la anterior. El canj
 |---|---|
 | `GET /wp-json/ecomiq/v1/status` | Versión del plugin, nombre de la tienda, `authorize_url`, `rest_url`, servidor de Ecomiq y si hay HTTPS. |
 | `POST /wp-json/ecomiq/v1/token` | Canjea el código de autorización por la clave de API. |
+| `GET /wp-json/ecomiq/v1/order-statuses` | Estados de pedido de la tienda, incluidos los que agregan otros plugins. Exige la clave de API de Ecomiq. |
 
 ### Qué guarda en tu tienda
 
