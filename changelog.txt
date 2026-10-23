@@ -1,5 +1,12 @@
 *** Ecomiq for WooCommerce Changelog ***
 
+2026-10-23 - version 1.1.0
+* New - "Ecomiq" shipping method for shipping zones: checkout charges the rates Ecomiq quotes, one shipment per seller, with a fallback rate when Ecomiq does not answer.
+* New - Orders Ecomiq creates for sales on other channels carry payment and shipping named after that channel, send no emails to the buyer and note where they were sold.
+* New - Ecomiq reads the store's order statuses, including those other plugins add, to map them.
+* New - Ecomiq webhooks that fail are retried after 30 seconds and 1, 2, 5 and 15 minutes, and can be retried with `wp ecomiq webhook retry`.
+* New - Disconnecting, or connecting to another Ecomiq store, tells the previous one and removes its webhooks.
+
 2026-10-18 - version 1.0.0
 * New - One-click connection with Ecomiq, with approval in WordPress.
 * New - Activity log of the changes Ecomiq makes, its failed requests and the webhooks that do not reach it.

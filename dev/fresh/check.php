@@ -18,7 +18,7 @@ wp_set_current_user( 1 );
 set_current_screen( 'dashboard' );
 
 $status = rest_do_request( new WP_REST_Request( 'GET', '/ecomiq/v1/status' ) );
-ecomiq_check( 'status 200', 200 === $status->get_status() && '1.0.0' === $status->get_data()['plugin'] );
+ecomiq_check( 'status 200', 200 === $status->get_status() && \Ecomiq\WooCommerce\VERSION === $status->get_data()['plugin'] );
 
 ob_start();
 Admin::render();

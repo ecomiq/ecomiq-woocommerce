@@ -3,7 +3,7 @@
  * Plugin Name:          Ecomiq for WooCommerce
  * Plugin URI:           https://ecomiq.pe
  * Description:          Connect your store to Ecomiq in one click to sync products, stock, prices and orders.
- * Version:              1.0.0
+ * Version:              1.1.0
  * Requires at least:    6.5
  * Requires PHP:         7.4
  * Requires Plugins:     woocommerce
@@ -23,7 +23,7 @@ namespace Ecomiq\WooCommerce;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const FILE    = __FILE__;
 
 require_once __DIR__ . '/includes/class-connection.php';

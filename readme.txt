@@ -4,7 +4,7 @@ Tags: woocommerce, marketplace, multichannel, inventory, orders
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,13 @@ WooCommerce → Ecomiq lists the last 50 changes Ecomiq made, its failed request
 In WooCommerce → Settings → Advanced → REST API, with the description "Ecomiq".
 
 == Changelog ==
+
+= 1.1.0 =
+* New - "Ecomiq" shipping method for shipping zones: checkout charges the rates Ecomiq quotes, one shipment per seller, with a fallback rate when Ecomiq does not answer.
+* New - Orders Ecomiq creates for sales on other channels carry payment and shipping named after that channel, send no emails to the buyer and note where they were sold.
+* New - Ecomiq reads the store's order statuses, including those other plugins add, to map them.
+* New - Ecomiq webhooks that fail are retried after 30 seconds and 1, 2, 5 and 15 minutes, and can be retried with `wp ecomiq webhook retry`.
+* New - Disconnecting, or connecting to another Ecomiq store, tells the previous one and removes its webhooks.
 
 = 1.0.0 =
 * New - One-click connection with Ecomiq, with approval in WordPress.
