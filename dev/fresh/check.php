@@ -3,6 +3,7 @@ use Ecomiq\WooCommerce\Admin;
 use Ecomiq\WooCommerce\Activity;
 use Ecomiq\WooCommerce\Authorization;
 use Ecomiq\WooCommerce\Connection;
+use Ecomiq\WooCommerce\Shipping;
 
 $GLOBALS['ecomiq_failed'] = 0;
 
@@ -106,6 +107,144 @@ set_current_screen( 'plugins' );
 ob_start();
 Admin::activation_notice();
 ecomiq_check( 'no notice when connected', '' === ob_get_clean() );
+
+add_filter( 'woocommerce_set_cookie_enabled', '__return_false' );
+$zone = new WC_Shipping_Zone();
+$zone->set_zone_name( 'Peru' );
+$zone->add_location( 'PE', 'country' );
+$zone->save();
+$instance = $zone->add_shipping_method( Shipping::METHOD_ID );
+update_option(
+	'woocommerce_' . Shipping::METHOD_ID . '_' . $instance . '_settings',
+	array(
+		'fallback_cost'  => '15',
+		'fallback_title' => 'Standard',
+	)
+);
+$products = array();
+foreach ( array( 'FRESH-A', 'FRESH-B', 'FRESH-C' ) as $sku ) {
+	$product = new WC_Product_Simple();
+	$product->set_name( $sku );
+	$product->set_sku( $sku );
+	$product->set_regular_price( '50' );
+	$product->save();
+	$products[ $sku ] = $product;
+}
+$quotes      = array();
+$quote_fails = false;
+$quote_http  = function ( $pre, $args, $url ) use ( &$quotes, &$quote_fails ) {
+	if ( 'https://example.test/webhooks/woocommerce/1/shipping-rates' !== $url ) {
+		return $pre;
+	}
+	$body     = json_decode( $args['body'], true );
+	$quotes[] = array(
+		'body'   => $body,
+		'signed' => base64_encode( hash_hmac( 'sha256', $args['body'], 'fresh-secret', true ) ) === $args['headers']['X-WC-Webhook-Signature'],
+	);
+	if ( $quote_fails ) {
+		return new WP_Error( 'http_request_failed', 'Fixture timeout.' );
+	}
+	$sellers = array(
+		'FRESH-A' => array( 'Andes', array( array( '{"sellerId":1,"shippingMethodId":7}', 'Urbano', 12.5 ) ) ),
+		'FRESH-B' => array( 'Lima', array( array( '{"sellerId":2,"shippingMethodId":8}', 'Olva', 9.9 ), array( '{"sellerId":2,"shippingMethodId":9}', 'Express', 20 ) ) ),
+	);
+	$groups  = array();
+	foreach ( $body['items'] as $item ) {
+		if ( ! isset( $sellers[ $item['sku'] ] ) ) {
+			continue;
+		}
+		$rates = array();
+		foreach ( $sellers[ $item['sku'] ][1] as $rate ) {
+			$rates[] = array(
+				'reference' => $rate[0],
+				'name'      => $rate[1],
+				'price'     => $rate[2],
+			);
+		}
+		$groups[] = array(
+			'sellerId'   => '1',
+			'sellerName' => $sellers[ $item['sku'] ][0],
+			'items'      => array( $item['key'] ),
+			'rates'      => $rates,
+		);
+	}
+	return array(
+		'headers'  => array(),
+		'body'     => wp_json_encode( array( 'groups' => $groups ) ),
+		'response' => array(
+			'code'    => 200,
+			'message' => 'OK',
+		),
+		'cookies'  => array(),
+	);
+};
+add_filter( 'pre_http_request', $quote_http, 10, 3 );
+wc_load_cart();
+WC()->customer->set_billing_country( 'PE' );
+WC()->customer->set_shipping_country( 'PE' );
+WC()->customer->set_shipping_state( 'ARE' );
+WC()->customer->set_shipping_city( 'Arequipa' );
+$keys = array();
+foreach ( $products as $sku => $product ) {
+	$keys[ $sku ] = WC()->cart->add_to_cart( $product->get_id(), 2 );
+}
+WC()->cart->calculate_totals();
+$packages = WC()->shipping()->get_packages();
+$asked    = count( $quotes );
+$last     = end( $quotes );
+$sent     = $last['body'];
+ecomiq_check( 'quote is signed with the webhook secret', $last['signed'] );
+ecomiq_check( 'quote sends the cart items and destination', 3 === count( $sent['items'] ) && 'FRESH-A' === $sent['items'][0]['sku'] && 2 === $sent['items'][0]['quantity'] && 50.0 === (float) $sent['items'][0]['price'] && 'ARE' === $sent['destination']['state'] && 'Arequipa' === $sent['destination']['stateName'] );
+ecomiq_check( 'one package per seller plus the rest', 3 === count( $packages ) && array( $keys['FRESH-A'] ) === array_keys( $packages[0]['contents'] ) && array( $keys['FRESH-C'] ) === array_keys( $packages[2]['contents'] ) );
+ecomiq_check( 'packages named after the seller', 'Shipping from Lima' === apply_filters( 'woocommerce_shipping_package_name', 'Shipping', 1, $packages[1] ) );
+$rate_a = current( $packages[0]['rates'] );
+ecomiq_check( 'seller rates with their reference', 1 === count( $packages[0]['rates'] ) && 'Urbano' === $rate_a->get_label() && 12.5 === (float) $rate_a->get_cost() && '{"sellerId":1,"shippingMethodId":7}' === $rate_a->get_meta_data()[ Shipping::RATE_META ] && 2 === count( $packages[1]['rates'] ) );
+ecomiq_check( 'items Ecomiq does not sell get no Ecomiq rate', array() === $packages[2]['rates'] );
+WC()->cart->calculate_totals();
+ecomiq_check( 'quote reused while the cart does not change', $asked === count( $quotes ) );
+
+WC()->cart->remove_cart_item( $keys['FRESH-C'] );
+WC()->cart->calculate_totals();
+$packages = WC()->shipping()->get_packages();
+WC()->session->set( 'chosen_shipping_methods', array( $rate_a->get_id(), key( $packages[1]['rates'] ) ) );
+WC()->cart->calculate_totals();
+$order_id = WC()->checkout()->create_order(
+	array(
+		'payment_method' => 'cod',
+		'billing_email'  => 'buyer@example.test',
+	)
+);
+$rest     = rest_do_request( new WP_REST_Request( 'GET', '/wc/v3/orders/' . $order_id ) )->get_data();
+$lines    = array();
+foreach ( $rest['shipping_lines'] as $line ) {
+	foreach ( $line['meta_data'] as $meta ) {
+		if ( Shipping::RATE_META === $meta['key'] ) {
+			$lines[] = array( $line['method_title'], $line['total'], $meta['value'] );
+		}
+	}
+}
+ecomiq_check( 'order REST has one shipping line per seller with its reference', array( array( 'Urbano', '12.50', '{"sellerId":1,"shippingMethodId":7}' ), array( 'Olva', '9.90', '{"sellerId":2,"shippingMethodId":8}' ) ) === $lines && '22.40' === $rest['shipping_total'] );
+
+$quote_fails = true;
+WC()->cart->set_quantity( $keys['FRESH-A'], 3 );
+WC()->cart->calculate_totals();
+$packages = WC()->shipping()->get_packages();
+$fallback = current( $packages[0]['rates'] );
+ecomiq_check( 'fallback rate when Ecomiq does not answer', 1 === count( $packages ) && 1 === count( $packages[0]['rates'] ) && 'Standard' === $fallback->get_label() && 15.0 === (float) $fallback->get_cost() );
+ecomiq_check( 'failed quote in activity', 'quote_failed' === Activity::events()[0]['type'] );
+
+$asked = count( $quotes );
+WC()->customer->set_shipping_country( 'CL' );
+WC()->cart->calculate_totals();
+ecomiq_check( 'no quote outside Ecomiq zones', $asked === count( $quotes ) && 1 === count( WC()->shipping()->get_packages() ) );
+
+remove_filter( 'pre_http_request', $quote_http, 10 );
+WC()->cart->empty_cart();
+wc_get_order( $order_id )->delete( true );
+foreach ( $products as $product ) {
+	$product->delete( true );
+}
+$zone->delete();
 
 $sent    = array();
 $capture = function ( $pre, $args, $url ) use ( &$sent ) {

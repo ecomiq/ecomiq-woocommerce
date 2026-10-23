@@ -22,11 +22,13 @@ This plugin replaces copying API keys by hand:
 
 When you sell a product from this store on another channel, Ecomiq creates the order here with payment and shipping named after the channel where it sold, such as "Shopify". They never show at checkout, charge no shipping, and the buyer gets no emails from your store. An order note says where it was sold, and the Origin column shows the channel.
 
+Add the "Ecomiq" method to a shipping zone and checkout charges the shipping you set up in Ecomiq: one shipment per seller, with its carrier. If Ecomiq does not answer, it charges the fallback rate you set in the zone.
+
 **Disconnect** deletes the API key and the webhooks Ecomiq created. Your products and orders do not change.
 
 = External service =
 
-This plugin connects your store to [Ecomiq](https://ecomiq.pe), an external service. Nothing is sent until you approve a connection. When you approve it, Ecomiq receives a WooCommerce API key with read and write access and the name and address of your store. Ecomiq then uses the WooCommerce REST API to read and update products, stock, prices and orders.
+This plugin connects your store to [Ecomiq](https://ecomiq.pe), an external service. Nothing is sent until you approve a connection. When you approve it, Ecomiq receives a WooCommerce API key with read and write access and the name and address of your store. Ecomiq then uses the WooCommerce REST API to read and update products, stock, prices and orders. If a shipping zone uses the Ecomiq method, checkout sends Ecomiq the cart items (product IDs, SKU, quantity and price) and the shipping address to get the shipping rates.
 
 * [Terms of service](https://ecomiq.pe/terminos)
 * [Privacy policy](https://ecomiq.pe/privacidad)

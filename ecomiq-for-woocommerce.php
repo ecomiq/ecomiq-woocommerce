@@ -33,6 +33,7 @@ require_once __DIR__ . '/includes/class-authorization.php';
 require_once __DIR__ . '/includes/class-rest.php';
 require_once __DIR__ . '/includes/class-admin.php';
 require_once __DIR__ . '/includes/class-orders.php';
+require_once __DIR__ . '/includes/class-shipping.php';
 
 add_action(
 	'before_woocommerce_init',
@@ -62,5 +63,6 @@ add_action(
 		Activity::register();
 		Admin::register();
 		Orders::register();
+		Shipping::register();
 	}
 );

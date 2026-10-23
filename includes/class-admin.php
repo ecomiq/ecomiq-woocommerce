@@ -111,7 +111,7 @@ final class Admin {
 		}
 		$text = sprintf(
 			/* translators: %s: Ecomiq privacy policy URL */
-			__( 'When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. Ecomiq handles this data under its privacy policy: %s', 'ecomiq-for-woocommerce' ),
+			__( 'When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. If a shipping zone uses the Ecomiq method, checkout also sends Ecomiq the cart and the shipping address to calculate shipping. Ecomiq handles this data under its privacy policy: %s', 'ecomiq-for-woocommerce' ),
 			'https://ecomiq.pe/privacidad'
 		);
 		wp_add_privacy_policy_content( 'Ecomiq for WooCommerce', wpautop( esc_html( $text ) ) );

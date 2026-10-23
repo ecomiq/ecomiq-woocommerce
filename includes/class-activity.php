@@ -136,6 +136,7 @@ final class Activity {
 			'webhook_failed'   => __( 'A webhook did not reach Ecomiq', 'ecomiq-for-woocommerce' ),
 			'webhook_disabled' => __( 'WooCommerce disabled an Ecomiq webhook after repeated failures', 'ecomiq-for-woocommerce' ),
 			'webhook_enabled'  => __( 'Turned an Ecomiq webhook back on', 'ecomiq-for-woocommerce' ),
+			'quote_failed'     => __( 'Ecomiq did not quote shipping', 'ecomiq-for-woocommerce' ),
 		);
 		if ( isset( $labels[ $type ] ) ) {
 			return $labels[ $type ];

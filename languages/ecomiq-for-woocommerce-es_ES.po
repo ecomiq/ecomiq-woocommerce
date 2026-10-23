@@ -200,8 +200,8 @@ msgstr "Conecta tu tienda con Ecomiq para sincronizar productos, stock, precios 
 msgid "Dismiss this notice."
 msgstr "Descartar este aviso."
 
-msgid "When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. Ecomiq handles this data under its privacy policy: %s"
-msgstr "Al conectar esta tienda, Ecomiq recibe una clave de API de WooCommerce y lee y actualiza productos, stock, precios y pedidos, incluidos el nombre, el correo, el teléfono y las direcciones del cliente de cada pedido. Ecomiq trata estos datos según su política de privacidad: %s"
+msgid "When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. If a shipping zone uses the Ecomiq method, checkout also sends Ecomiq the cart and the shipping address to calculate shipping. Ecomiq handles this data under its privacy policy: %s"
+msgstr "Al conectar esta tienda, Ecomiq recibe una clave de API de WooCommerce y lee y actualiza productos, stock, precios y pedidos, incluidos el nombre, el correo, el teléfono y las direcciones del cliente de cada pedido. Si una zona de envío usa el método de Ecomiq, el checkout también le envía el carrito y la dirección de envío para calcular el envío. Ecomiq trata estos datos según su política de privacidad: %s"
 
 msgid "%1$s answered instead of the REST API (HTTP %2$d). Ecomiq will be blocked the same way."
 msgstr "%1$s respondió en lugar de la API REST (HTTP %2$d). A Ecomiq lo bloqueará igual."
@@ -289,3 +289,30 @@ msgstr "Vendido en %s. Ecomiq creó este pedido."
 
 msgid "Sold on %1$s, order %2$s. Ecomiq created this order."
 msgstr "Vendido en %1$s, pedido %2$s. Ecomiq creó este pedido."
+
+msgid "Shows the shipping rates that Ecomiq calculates for each seller, with your zones, rates and carriers in Ecomiq."
+msgstr "Muestra las tarifas de envío que Ecomiq calcula para cada vendedor, con tus zonas, tarifas y transportistas de Ecomiq."
+
+msgid "Fallback rate"
+msgstr "Tarifa de respaldo"
+
+msgid "None"
+msgstr "Ninguna"
+
+msgid "Charged when Ecomiq does not answer. Leave it empty to offer no shipping in that case."
+msgstr "Se cobra si Ecomiq no responde. Déjala vacía para no ofrecer envío en ese caso."
+
+msgid "Fallback rate name"
+msgstr "Nombre de la tarifa de respaldo"
+
+msgid "Shipping"
+msgstr "Envío"
+
+msgid "What the buyer sees for the fallback rate."
+msgstr "Lo que ve el comprador en la tarifa de respaldo."
+
+msgid "Shipping from %s"
+msgstr "Envío de %s"
+
+msgid "Ecomiq did not quote shipping"
+msgstr "Ecomiq no cotizó el envío"

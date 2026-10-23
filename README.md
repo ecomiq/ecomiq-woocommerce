@@ -22,6 +22,7 @@ En WordPress, el plugin agrega una página en **WooCommerce → Ecomiq** con:
 - **Diagnóstico.** Revisa HTTPS, enlaces permanentes, la API REST y los webhooks. Si un firewall o plugin de seguridad bloquea a Ecomiq, dice cuál es y qué IP permitir.
 - **Webhooks que se recuperan solos.** WooCommerce apaga un webhook tras 5 fallas seguidas. El plugin vuelve a activar los de Ecomiq a los 15 minutos.
 - **Pedidos de otros canales sin cobros.** Cuando vendes un producto de tu tienda en otro canal, Ecomiq crea el pedido con el pago y el envío a nombre del canal donde se vendió (por ejemplo «Shopify»): no aparecen en tu checkout, no cobran envío y el comprador no recibe correos de tu tienda. Una nota dice dónde se vendió y con qué número, y la columna **Origen** de WooCommerce muestra el canal.
+- **Envío de Ecomiq.** Agrega el método «Ecomiq» a una zona de envío y el checkout cobra las tarifas que configuraste en Ecomiq: un envío por vendedor, con su transportista. Si Ecomiq no responde, cobra la tarifa de respaldo que pongas en la zona.
 - **Estados a tu medida.** Si tu tienda usa estados propios (por ejemplo «Despachado»), en Ecomiq eliges qué significa cada uno al recibir pedidos y cuál usar al actualizarlos.
 - **Desconexión limpia.** Borra la clave de API y los webhooks de Ecomiq. Tus productos y pedidos no cambian.
 
@@ -71,6 +72,10 @@ Hay una clave por tienda: reconectar crea una nueva y borra la anterior. El canj
 | `POST /wp-json/ecomiq/v1/token` | Canjea el código de autorización por la clave de API. |
 | `GET /wp-json/ecomiq/v1/order-statuses` | Estados de pedido de la tienda, incluidos los que agregan otros plugins. Exige la clave de API de Ecomiq. |
 
+### Envío
+
+Cuando la zona de la dirección usa el método `ecomiq_rates`, el plugin manda a Ecomiq los productos del carrito (IDs, SKU, cantidad y precio) y la dirección de envío, firmados con el secreto de los webhooks de Ecomiq. Ecomiq responde un grupo por vendedor con sus tarifas, y el plugin arma un paquete por grupo. Cada tarifa guarda en la línea de envío del pedido la meta `ecomiq_rate`, oculta en la pantalla del pedido, con la que Ecomiq sabe qué método y transportista eligió el comprador. La respuesta se reutiliza 10 minutos mientras el carrito y la dirección no cambien.
+
 ### Qué guarda en tu tienda
 
 - Una clave de API de WooCommerce de lectura y escritura, a nombre del usuario que aprobó.
@@ -81,7 +86,7 @@ Al desinstalar el plugin se borran la clave, los webhooks y las opciones.
 
 ### Privacidad
 
-Ecomiq lee y actualiza productos, stock, precios y pedidos, incluidos nombre, correo, teléfono y direcciones del cliente de cada pedido. El plugin agrega ese texto a la guía de privacidad de WordPress. Ecomiq trata los datos según su [política de privacidad](https://ecomiq.pe/privacidad).
+Ecomiq lee y actualiza productos, stock, precios y pedidos, incluidos nombre, correo, teléfono y direcciones del cliente de cada pedido. Si una zona usa el método de Ecomiq, el checkout también le manda el carrito y la dirección de envío para calcular el envío. El plugin agrega ese texto a la guía de privacidad de WordPress. Ecomiq trata los datos según su [política de privacidad](https://ecomiq.pe/privacidad).
 
 ## Enlaces
 
