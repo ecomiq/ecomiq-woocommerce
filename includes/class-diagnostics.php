@@ -57,6 +57,10 @@ final class Diagnostics {
 		if ( null !== $webhooks ) {
 			$checks[] = $webhooks;
 		}
+		$fulfillments = self::fulfillments();
+		if ( null !== $fulfillments ) {
+			$checks[] = $fulfillments;
+		}
 		foreach ( self::firewalls() as $firewall ) {
 			$checks[] = $firewall;
 		}
@@ -285,6 +289,25 @@ final class Diagnostics {
 	}
 
 	/**
+	 * Says whether WooCommerce fulfillments are on, where Ecomiq records what each seller shipped.
+	 *
+	 * @return array|null
+	 */
+	private static function fulfillments() {
+		if ( null === Connection::current() ) {
+			return null;
+		}
+		$label = __( 'WooCommerce fulfillments', 'ecomiq-for-woocommerce' );
+		if ( Fulfillments::enabled() ) {
+			return self::check( 'fulfillments', 'ok', $label, __( 'On', 'ecomiq-for-woocommerce' ) );
+		}
+		if ( ! Fulfillments::available() ) {
+			return self::check( 'fulfillments', 'off', $label, __( 'Off. They need WooCommerce 10.2 or later.', 'ecomiq-for-woocommerce' ) );
+		}
+		return self::check( 'fulfillments', 'off', $label, __( 'Off', 'ecomiq-for-woocommerce' ) );
+	}
+
+	/**
 	 * Lists active security plugins and Cloudflare, with where to allow Ecomiq.
 	 *
 	 * @return array[]
@@ -401,7 +424,7 @@ final class Diagnostics {
 	 * Builds one check.
 	 *
 	 * @param string $id     Check ID.
-	 * @param string $status ok, warning, error, info or unknown.
+	 * @param string $status ok, warning, error, info, unknown or off.
 	 * @param string $label  What was checked.
 	 * @param string $detail What it means and what to do.
 	 *

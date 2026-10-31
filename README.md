@@ -19,7 +19,8 @@ En WordPress, el plugin agrega una página en **WooCommerce → Ecomiq** con:
 
 - **Conexión en un clic.** Apruebas en WordPress y Ecomiq recibe su propia clave de API.
 - **Actividad.** Qué cambió Ecomiq en tu tienda, qué solicitudes fallaron y qué webhooks no llegaron.
-- **Diagnóstico.** Revisa HTTPS, enlaces permanentes, la API REST y los webhooks. Si un firewall o plugin de seguridad bloquea a Ecomiq, dice cuál es y qué IP permitir.
+- **Diagnóstico.** Revisa HTTPS, enlaces permanentes, la API REST y los webhooks. Si un firewall o plugin de seguridad bloquea a Ecomiq, dice cuál es y qué IP permitir. También dice si los envíos parciales de WooCommerce están activos y ofrece activarlos.
+- **Pedidos con varios vendedores.** Si un pedido trae productos de varios vendedores, o tuyos y de un vendedor, el recuadro **Ecomiq** del pedido muestra cada parte con sus productos, su estado y su seguimiento. Cada línea dice quién la envía.
 - **Webhooks que se recuperan solos.** WooCommerce apaga un webhook tras 5 fallas seguidas. El plugin vuelve a activar los de Ecomiq a los 15 minutos.
 - **Pedidos de otros canales sin cobros.** Cuando vendes un producto de tu tienda en otro canal, Ecomiq crea el pedido con el pago y el envío a nombre del canal donde se vendió (por ejemplo «Shopify»): no aparecen en tu checkout, no cobran envío y el comprador no recibe correos de tu tienda. Una nota dice dónde se vendió y con qué número, y la columna **Origen** de WooCommerce muestra el canal.
 - **Envío de Ecomiq.** Agrega el método «Ecomiq» a una zona de envío y el checkout cobra las tarifas que configuraste en Ecomiq: un envío por vendedor, con su transportista. Si Ecomiq no responde, cobra la tarifa de respaldo que pongas en la zona.
@@ -68,7 +69,7 @@ Hay una clave por tienda: reconectar crea una nueva y borra la anterior. El canj
 
 | Ruta | Uso |
 |---|---|
-| `GET /wp-json/ecomiq/v1/status` | Versión del plugin, nombre de la tienda, `authorize_url`, `rest_url`, servidor de Ecomiq y si hay HTTPS. |
+| `GET /wp-json/ecomiq/v1/status` | Versión del plugin, nombre de la tienda, `authorize_url`, `rest_url`, servidor de Ecomiq, si hay HTTPS, versión de WooCommerce (`wooVersion`) y si los envíos parciales están activos (`fulfillments`). |
 | `POST /wp-json/ecomiq/v1/token` | Canjea el código de autorización por la clave de API. |
 | `GET /wp-json/ecomiq/v1/order-statuses` | Estados de pedido de la tienda, incluidos los que agregan otros plugins. Exige la clave de API de Ecomiq. |
 
@@ -76,13 +77,21 @@ Hay una clave por tienda: reconectar crea una nueva y borra la anterior. El canj
 
 Cuando la zona de la dirección usa el método `ecomiq_rates`, el plugin manda a Ecomiq los productos del carrito (IDs, SKU, cantidad y precio) y la dirección de envío, firmados con el secreto de los webhooks de Ecomiq. Ecomiq responde un grupo por vendedor con sus tarifas, y el plugin arma un paquete por grupo. Cada tarifa guarda en la línea de envío del pedido la meta `ecomiq_rate`, oculta en la pantalla del pedido, con la que Ecomiq sabe qué método y transportista eligió el comprador. La respuesta se reutiliza 10 minutos mientras el carrito y la dirección no cambien.
 
+### Pedidos
+
+- **Sello.** Ecomiq guarda en cada producto que publica la meta `_ecomiq` (`{"v":1,"store":…,"listing":…,"product":…}`). Al crearse un pedido, desde el checkout clásico o el de bloques, la API REST o la pantalla del pedido, el plugin copia el sello del producto (del padre, si es una variación) a la meta `_ecomiq` de la línea. Así Ecomiq sabe qué líneas son suyas aunque lea el pedido tarde. La meta no se ve en la pantalla del pedido ni en los correos.
+- **Partes.** Ecomiq escribe en la meta privada `_ecomiq_parts` del pedido una parte por vendedor y otra con tus productos, cada una con sus líneas, su estado y sus envíos. El plugin la lee para el recuadro y las líneas; no llama a Ecomiq al abrir el pedido.
+- **Envíos parciales.** Con la función Order Fulfillments de WooCommerce (beta desde la 10.2), Ecomiq registra el envío de cada vendedor en el pedido. WooCommerce no tiene un interruptor para activarla: el botón **Activar envíos parciales** de Diagnóstico pone la opción `woocommerce_feature_fulfillments_enabled` en `yes`, y el plugin nunca la activa solo. Si usas WooCommerce Shipping, las etiquetas compradas antes dejan de verse en el pedido ([issue #69430](https://github.com/woocommerce/woocommerce/issues/69430)).
+- **Un solo aviso a la compradora.** Si Ecomiq ya le avisó con sus envíos (una fulfillment con la meta `_ecomiq_shipment`), el plugin no manda el correo «Pedido completado» de WooCommerce. Las fulfillments que crea la tienda no cuentan. Sin envíos de Ecomiq, o con los envíos parciales apagados, el correo sale como siempre.
+
 ### Qué guarda en tu tienda
 
 - Una clave de API de WooCommerce de lectura y escritura, a nombre del usuario que aprobó.
 - Los webhooks de productos y pedidos que registra Ecomiq (`product.*`, `order.*`).
 - Las opciones `ecomiq_connection`, `ecomiq_settings` y `ecomiq_activity` (últimos 50 eventos). La actividad también va al registro de WooCommerce con origen `ecomiq`.
+- La meta `_ecomiq` en las líneas de los pedidos con productos que publicó Ecomiq.
 
-Al desinstalar el plugin se borran la clave, los webhooks y las opciones.
+Al desinstalar el plugin se borran la clave, los webhooks y las opciones. Los pedidos no cambian.
 
 ### Privacidad
 

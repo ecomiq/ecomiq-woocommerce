@@ -24,6 +24,12 @@ When you sell a product from this store on another channel, Ecomiq creates the o
 
 Add the "Ecomiq" method to a shipping zone and checkout charges the shipping you set up in Ecomiq: one shipment per seller, with its carrier. If Ecomiq does not answer, it charges the fallback rate you set in the zone.
 
+When an order has products from several sellers, or yours and a seller's, the Ecomiq box on the order shows each part with its products, status and tracking. Each line says who ships it.
+
+Diagnostics says whether WooCommerce fulfillments are on, where Ecomiq records what each seller shipped, and has a button to turn them on. They are a WooCommerce beta and never turn on by themselves.
+
+When Ecomiq already told the buyer about its shipments through fulfillments, the plugin does not send WooCommerce's "Completed order" email, so she gets no second email. Fulfillments the store creates do not count. Without Ecomiq fulfillments, or with fulfillments off, the email is sent as usual.
+
 **Disconnect** deletes the API key and the webhooks Ecomiq created. Your products and orders do not change.
 
 = External service =
@@ -46,6 +52,10 @@ WooCommerce → Ecomiq lists the last 50 changes Ecomiq made, its failed request
 = Where is the API key? =
 
 In WooCommerce → Settings → Advanced → REST API, with the description "Ecomiq".
+
+= What is the _ecomiq meta on order lines? =
+
+Ecomiq marks the products it publishes with the `_ecomiq` meta. When an order is placed, the plugin copies it to the order lines of those products, so Ecomiq knows which lines it sold. It is hidden on the order screen and in emails.
 
 == Changelog ==
 

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-23T13:58:18+00:00\n"
+"POT-Creation-Date: 2026-10-30T22:10:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ecomiq-for-woocommerce\n"
@@ -39,7 +39,7 @@ msgid "Ecomiq"
 msgstr ""
 
 #: includes/class-activity.php:121
-#: includes/class-admin.php:463
+#: includes/class-admin.php:513
 msgid "Connected to Ecomiq"
 msgstr ""
 
@@ -121,217 +121,235 @@ msgstr ""
 msgid "Products: %d"
 msgstr ""
 
-#: includes/class-admin.php:71
+#: includes/class-admin.php:72
 msgid "Settings"
 msgstr ""
 
-#: includes/class-admin.php:88
+#: includes/class-admin.php:89
 msgid "Connect your store to Ecomiq to sync products, stock, prices and orders."
 msgstr ""
 
-#: includes/class-admin.php:89
-#: includes/class-admin.php:330
-#: includes/class-admin.php:429
+#: includes/class-admin.php:90
+#: includes/class-admin.php:380
+#: includes/class-admin.php:479
 msgid "Connect to Ecomiq"
 msgstr ""
 
-#: includes/class-admin.php:90
+#: includes/class-admin.php:91
 msgid "Dismiss this notice."
 msgstr ""
 
 #. translators: %s: Ecomiq privacy policy URL
-#: includes/class-admin.php:114
+#: includes/class-admin.php:115
 #, php-format
 msgid "When you connect this store, Ecomiq receives a WooCommerce API key and reads and updates products, stock, prices and orders, including the name, email, phone and addresses of the customer on each order. If a shipping zone uses the Ecomiq method, checkout also sends Ecomiq the cart and the shipping address to calculate shipping. Ecomiq handles this data under its privacy policy: %s"
 msgstr ""
 
-#: includes/class-admin.php:168
+#: includes/class-admin.php:170
 msgid "Diagnostics"
 msgstr ""
 
-#: includes/class-admin.php:172
+#: includes/class-admin.php:174
 msgid "Check again"
 msgstr ""
 
-#: includes/class-admin.php:191
+#: includes/class-admin.php:196
 msgid "Ecomiq connects from:"
 msgstr ""
 
-#: includes/class-admin.php:216
+#: includes/class-admin.php:205
+msgid "A WooCommerce beta feature."
+msgstr ""
+
+#. translators: %s: link to the WooCommerce issue
+#: includes/class-admin.php:211
+#, php-format
+msgid "With WooCommerce Shipping, labels bought before stop showing on the order (%s)."
+msgstr ""
+
+#: includes/class-admin.php:226
+msgid "Turn on fulfillments"
+msgstr ""
+
+#: includes/class-admin.php:266
 msgid "Activity"
 msgstr ""
 
-#: includes/class-admin.php:217
+#: includes/class-admin.php:267
 msgid "Full logs"
 msgstr ""
 
 #. translators: %s: human time difference
-#: includes/class-admin.php:226
-#: includes/class-admin.php:478
+#: includes/class-admin.php:276
+#: includes/class-admin.php:528
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: includes/class-admin.php:302
+#: includes/class-admin.php:352
 msgid "You are not allowed to connect this store."
 msgstr ""
 
 #. translators: %s: store name
-#: includes/class-admin.php:363
+#: includes/class-admin.php:413
 #, php-format
 msgid "Connect %s to Ecomiq"
 msgstr ""
 
-#: includes/class-admin.php:367
+#: includes/class-admin.php:417
 msgid "Ecomiq will be able to read and update products, stock, prices and orders."
 msgstr ""
 
-#: includes/class-admin.php:370
-#: includes/class-admin.php:472
+#: includes/class-admin.php:420
+#: includes/class-admin.php:522
 msgid "Ecomiq store"
 msgstr ""
 
-#: includes/class-admin.php:372
+#: includes/class-admin.php:422
 msgid "Access as"
 msgstr ""
 
-#: includes/class-admin.php:373
+#: includes/class-admin.php:423
 msgid "Returns to"
 msgstr ""
 
-#: includes/class-admin.php:376
+#: includes/class-admin.php:426
 msgid "This replaces the current connection."
 msgstr ""
 
 #. translators: %s: Ecomiq store name
-#: includes/class-admin.php:380
+#: includes/class-admin.php:430
 #, php-format
 msgid "This replaces the current connection with %s."
 msgstr ""
 
-#: includes/class-admin.php:393
+#: includes/class-admin.php:443
 msgid "Approve"
 msgstr ""
 
-#: includes/class-admin.php:394
-#: includes/class-admin.php:520
+#: includes/class-admin.php:444
+#: includes/class-admin.php:570
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-admin.php:404
+#: includes/class-admin.php:454
 msgid "The link is incomplete or expired. Start again from Ecomiq."
 msgstr ""
 
 #. translators: 1: address the request returns to, 2: trusted Ecomiq address
-#: includes/class-admin.php:410
+#: includes/class-admin.php:460
 #, php-format
 msgid "This request wants to return to %1$s, but this store only trusts %2$s. Do not approve it."
 msgstr ""
 
-#: includes/class-admin.php:414
+#: includes/class-admin.php:464
 msgid "If you are testing your own Ecomiq installation, change the address under Advanced."
 msgstr ""
 
-#: includes/class-admin.php:416
+#: includes/class-admin.php:466
 msgid "Invalid request"
 msgstr ""
 
-#: includes/class-admin.php:421
+#: includes/class-admin.php:471
 msgid "Back"
 msgstr ""
 
 #. translators: %s: store name
-#: includes/class-admin.php:432
+#: includes/class-admin.php:482
 #, php-format
 msgid "Sync products, stock, prices and orders of %s with Ecomiq."
 msgstr ""
 
-#: includes/class-admin.php:437
-#: includes/class-diagnostics.php:110
+#: includes/class-admin.php:487
+#: includes/class-diagnostics.php:114
 msgid "WordPress does not detect HTTPS. WooCommerce rejects API keys without it."
 msgstr ""
 
-#: includes/class-admin.php:440
-#: includes/class-diagnostics.php:122
+#: includes/class-admin.php:490
+#: includes/class-diagnostics.php:126
 msgid "Turn on permalinks in Settings → Permalinks."
 msgstr ""
 
-#: includes/class-admin.php:443
+#: includes/class-admin.php:493
 msgid "Connect"
 msgstr ""
 
-#: includes/class-admin.php:445
+#: includes/class-admin.php:495
 msgid "Advanced"
 msgstr ""
 
-#: includes/class-admin.php:449
+#: includes/class-admin.php:499
 msgid "Ecomiq address"
 msgstr ""
 
-#: includes/class-admin.php:451
+#: includes/class-admin.php:501
 msgid "Save"
 msgstr ""
 
-#: includes/class-admin.php:452
+#: includes/class-admin.php:502
 msgid "Change it only to test your own Ecomiq installation."
 msgstr ""
 
 #. translators: %s: store name
-#: includes/class-admin.php:466
+#: includes/class-admin.php:516
 #, php-format
 msgid "Ecomiq syncs products, stock, prices and orders of %s."
 msgstr ""
 
-#: includes/class-admin.php:474
+#: includes/class-admin.php:524
 msgid "Not yet"
 msgstr ""
 
-#: includes/class-admin.php:482
+#: includes/class-admin.php:532
 msgid "Last access"
 msgstr ""
 
-#: includes/class-admin.php:483
+#: includes/class-admin.php:533
 msgid "API key"
 msgstr ""
 
 #. translators: 1: date, 2: user name
-#: includes/class-admin.php:489
+#: includes/class-admin.php:539
 #, php-format
 msgid "%1$s by %2$s"
 msgstr ""
 
-#: includes/class-admin.php:494
+#: includes/class-admin.php:544
 msgid "Connected on"
 msgstr ""
 
-#: includes/class-admin.php:501
+#: includes/class-admin.php:551
 msgid "Open Ecomiq"
 msgstr ""
 
-#: includes/class-admin.php:502
-#: includes/class-admin.php:519
+#: includes/class-admin.php:552
+#: includes/class-admin.php:569
 msgid "Disconnect"
 msgstr ""
 
-#: includes/class-admin.php:512
+#: includes/class-admin.php:562
 msgid "Disconnect from Ecomiq?"
 msgstr ""
 
-#: includes/class-admin.php:513
+#: includes/class-admin.php:563
 msgid "Ecomiq stops syncing this store. Its API key and webhooks are deleted. Your products and orders do not change."
 msgstr ""
 
-#: includes/class-admin.php:530
+#: includes/class-admin.php:580
 msgid "Disconnected from Ecomiq."
 msgstr ""
 
-#: includes/class-admin.php:531
+#: includes/class-admin.php:581
 msgid "Address saved."
 msgstr ""
 
-#: includes/class-admin.php:532
+#: includes/class-admin.php:582
 #: includes/class-connection.php:55
 msgid "Use an address like https://admin.ecomiq.pe, without a path."
+msgstr ""
+
+#: includes/class-admin.php:583
+msgid "Fulfillments turned on."
 msgstr ""
 
 #: includes/class-authorization.php:110
@@ -342,85 +360,139 @@ msgstr ""
 msgid "WooCommerce could not create the API key."
 msgstr ""
 
-#: includes/class-diagnostics.php:108
-#: includes/class-diagnostics.php:110
+#: includes/class-diagnostics.php:112
+#: includes/class-diagnostics.php:114
 msgid "HTTPS"
 msgstr ""
 
-#: includes/class-diagnostics.php:120
-#: includes/class-diagnostics.php:122
+#: includes/class-diagnostics.php:124
+#: includes/class-diagnostics.php:126
 msgid "Permalinks"
 msgstr ""
 
-#: includes/class-diagnostics.php:131
+#: includes/class-diagnostics.php:135
 msgid "REST API"
 msgstr ""
 
-#: includes/class-diagnostics.php:140
+#: includes/class-diagnostics.php:144
 msgid "This server could not call itself, so the REST API was not tested. Some hosts block that test."
 msgstr ""
 
 #. translators: 1: firewall name, 2: HTTP status
-#: includes/class-diagnostics.php:155
+#: includes/class-diagnostics.php:159
 #, php-format
 msgid "%1$s answered instead of the REST API (HTTP %2$d). Ecomiq will be blocked the same way."
 msgstr ""
 
 #. translators: %d: HTTP status
-#: includes/class-diagnostics.php:167
+#: includes/class-diagnostics.php:171
 #, php-format
 msgid "The REST API answered HTTP %d. A security plugin or the host may be restricting it."
 msgstr ""
 
-#: includes/class-diagnostics.php:179
+#: includes/class-diagnostics.php:183
 msgid "Connection to Ecomiq"
 msgstr ""
 
 #. translators: 1: address, 2: error message
-#: includes/class-diagnostics.php:195
+#: includes/class-diagnostics.php:199
 #, php-format
 msgid "This server cannot reach %1$s (%2$s). Changes in the store will not reach Ecomiq until the host allows it."
 msgstr ""
 
-#: includes/class-diagnostics.php:214
+#: includes/class-diagnostics.php:218
 msgid "Ecomiq access"
 msgstr ""
 
 #. translators: %s: human time difference
-#: includes/class-diagnostics.php:228
+#: includes/class-diagnostics.php:232
 #, php-format
 msgid "Ecomiq has not reached the store for %s. If a firewall protects the store, allow Ecomiq."
 msgstr ""
 
-#: includes/class-diagnostics.php:243
+#: includes/class-diagnostics.php:247
 msgid "Webhooks"
 msgstr ""
 
-#: includes/class-diagnostics.php:246
+#: includes/class-diagnostics.php:250
 msgid "Ecomiq has not registered its webhooks yet, so it only sees changes on its scheduled checks."
 msgstr ""
 
 #. translators: %d: number of inactive webhooks
-#: includes/class-diagnostics.php:261
+#: includes/class-diagnostics.php:265
 #, php-format
 msgid "Ecomiq webhooks paused or disabled: %d. WooCommerce disables a webhook after 5 failed deliveries in a row. Turn them back on in WooCommerce → Settings → Advanced → Webhooks."
 msgstr ""
 
 #. translators: %d: number of failed webhooks
-#: includes/class-diagnostics.php:281
+#: includes/class-diagnostics.php:285
 #, php-format
 msgid "Webhooks that did not reach Ecomiq in the last 24 hours: %d."
 msgstr ""
 
-#. translators: %s: where to allow an IP address
+#: includes/class-diagnostics.php:300
+msgid "WooCommerce fulfillments"
+msgstr ""
+
+#: includes/class-diagnostics.php:302
+msgid "On"
+msgstr ""
+
 #: includes/class-diagnostics.php:305
-#: includes/class-diagnostics.php:317
+msgid "Off. They need WooCommerce 10.2 or later."
+msgstr ""
+
+#: includes/class-diagnostics.php:307
+msgid "Off"
+msgstr ""
+
+#. translators: %s: where to allow an IP address
+#: includes/class-diagnostics.php:328
+#: includes/class-diagnostics.php:340
 #, php-format
 msgid "If it blocks Ecomiq, allow its IP addresses in %s."
 msgstr ""
 
-#: includes/class-diagnostics.php:351
+#: includes/class-diagnostics.php:374
 msgid "A firewall"
+msgstr ""
+
+#. translators: %d: number of products
+#: includes/class-order-parts.php:61
+#, php-format
+msgid "%d product"
+msgid_plural "%d products"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-order-parts.php:147
+msgid "Your products"
+msgstr ""
+
+#: includes/class-order-parts.php:230
+msgid "To prepare"
+msgstr ""
+
+#: includes/class-order-parts.php:231
+msgid "Preparing"
+msgstr ""
+
+#: includes/class-order-parts.php:232
+#: includes/class-order-parts.php:239
+msgid "Shipped"
+msgstr ""
+
+#: includes/class-order-parts.php:233
+msgid "Delivered"
+msgstr ""
+
+#: includes/class-order-parts.php:234
+#: includes/class-order-parts.php:240
+msgid "Cancelled"
+msgstr ""
+
+#: includes/class-order-parts.php:238
+msgid "Pending"
 msgstr ""
 
 #: includes/class-orders.php:129
@@ -447,7 +519,7 @@ msgstr ""
 msgid "Sold on another channel"
 msgstr ""
 
-#: includes/class-rest.php:161
+#: includes/class-rest.php:163
 msgid "WordPress does not detect HTTPS, so WooCommerce will reject the API key."
 msgstr ""
 

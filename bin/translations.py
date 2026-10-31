@@ -10,6 +10,8 @@ LOCALES = [
     "es_UY", "es_VE", "es_CR", "es_GT", "es_DO", "es_PR",
 ]
 ENTRY = re.compile(r'^msgid "(.*)"\nmsgstr "(.*)"$', re.MULTILINE)
+PLURAL = re.compile(r'^msgid "(.*)"\nmsgid_plural "(.*)"\nmsgstr\[0\] "(.*)"\nmsgstr\[1\] "(.*)"$', re.MULTILINE)
+STRING = r"'((?:[^'\\]|\\.)*)'"
 
 
 def unquote(value):
@@ -17,7 +19,7 @@ def unquote(value):
 
 
 def php(value):
-    return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+    return ' . "\\0" . '.join("'" + part.replace("\\", "\\\\").replace("'", "\\'") + "'" for part in value.split("\0"))
 
 
 def sources():
@@ -26,6 +28,8 @@ def sources():
         text = path.read_text(encoding="utf-8")
         used.update(re.findall(r"""__\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'""" + DOMAIN, text))
         used.update(re.findall(r"""esc_html__\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'""" + DOMAIN, text))
+        for singular, plural in re.findall(r"_n\(\s*" + STRING + r"\s*,\s*" + STRING + r"\s*,[^;]*?'" + DOMAIN, text):
+            used.add(singular + "\0" + plural)
         for header in ("Description",):
             match = re.search(rf"^\s*\*\s*{header}:\s*(.+)$", text, re.MULTILINE)
             if match:
@@ -34,11 +38,14 @@ def sources():
 
 
 def main():
+    text = SOURCE.read_text(encoding="utf-8")
     messages = {
         unquote(source): unquote(target)
-        for source, target in ENTRY.findall(SOURCE.read_text(encoding="utf-8"))
+        for source, target in ENTRY.findall(text)
         if source
     }
+    for singular, plural, one, other in PLURAL.findall(text):
+        messages[unquote(singular) + "\0" + unquote(plural)] = unquote(one) + "\0" + unquote(other)
     missing = sorted(sources() - messages.keys())
     if missing:
         print("Missing translations:", *missing, sep="\n  ")

@@ -56,7 +56,7 @@ composer install && composer lint
 ```
 
 - `composer lint`: PHPCS con WooCommerce-Core completo (docblocks incluidos) y PHPCompatibility desde PHP 7.4. Plugin Check solo deja el aviso de `load_plugin_textdomain`, que hace falta porque las traducciones van dentro del plugin.
-- `./dev/fresh.sh`: instala desde cero en PHP 7.4 + WP 7.0 + WC 11.1 y en PHP 8.4 + WP 7.1 + WC 11.2. Activa, conecta con PKCE, desconecta y desinstala. Falla si queda algo en la base o hay avisos en `debug.log`.
+- `./dev/fresh.sh`: instala desde cero en PHP 7.4 + WP 7.0 + WC 11.1 y en PHP 8.4 + WP 7.1 + WC 11.2. Activa, conecta con PKCE, desconecta y desinstala. Los chequeos de pedidos corren sin HPOS y con HPOS, en español (instala el idioma `es_ES`), y los del correo «Pedido completado» también, con los envíos parciales activos. Falla si queda algo en la base o hay avisos en `debug.log`.
 
 ## Versiones
 

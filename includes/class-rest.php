@@ -145,6 +145,8 @@ final class Rest {
 				'authorize_url' => admin_url( 'admin.php?page=' . Admin::PAGE ),
 				'server'        => Connection::server(),
 				'https'         => is_ssl(),
+				'wooVersion'    => WC()->version,
+				'fulfillments'  => Fulfillments::enabled(),
 			)
 		);
 	}

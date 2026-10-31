@@ -29,10 +29,13 @@ const FILE    = __FILE__;
 require_once __DIR__ . '/includes/class-connection.php';
 require_once __DIR__ . '/includes/class-activity.php';
 require_once __DIR__ . '/includes/class-diagnostics.php';
+require_once __DIR__ . '/includes/class-fulfillments.php';
 require_once __DIR__ . '/includes/class-authorization.php';
 require_once __DIR__ . '/includes/class-rest.php';
 require_once __DIR__ . '/includes/class-admin.php';
 require_once __DIR__ . '/includes/class-orders.php';
+require_once __DIR__ . '/includes/class-order-parts.php';
+require_once __DIR__ . '/includes/class-seal.php';
 require_once __DIR__ . '/includes/class-shipping.php';
 
 add_action(
@@ -63,6 +66,9 @@ add_action(
 		Activity::register();
 		Admin::register();
 		Orders::register();
+		Fulfillments::register();
+		Order_Parts::register();
+		Seal::register();
 		Shipping::register();
 	}
 );

@@ -37,6 +37,7 @@ final class Admin {
 		add_action( 'admin_post_ecomiq_server', array( __CLASS__, 'server' ) );
 		add_action( 'admin_post_ecomiq_dismiss', array( __CLASS__, 'dismiss' ) );
 		add_action( 'admin_post_ecomiq_diagnose', array( __CLASS__, 'diagnose' ) );
+		add_action( 'admin_post_ecomiq_fulfillments', array( __CLASS__, 'fulfillments' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( FILE ), array( __CLASS__, 'action_links' ) );
 	}
 
@@ -163,6 +164,7 @@ final class Admin {
 			'error'   => 'dismiss',
 			'info'    => 'shield',
 			'unknown' => 'editor-help',
+			'off'     => 'minus',
 		);
 		echo '<div class="ecomiq-diagnostics">';
 		echo '<div class="ecomiq-activity-head"><h2>' . esc_html__( 'Diagnostics', 'ecomiq-for-woocommerce' ) . '</h2>';
@@ -183,6 +185,9 @@ final class Admin {
 			if ( '' !== $check['detail'] ) {
 				echo '<span class="ecomiq-activity-detail">' . esc_html( $check['detail'] ) . '</span>';
 			}
+			if ( 'fulfillments' === $check['id'] && 'off' === $check['status'] && Fulfillments::available() ) {
+				self::render_fulfillments();
+			}
 			echo '</td></tr>';
 		}
 		echo '</tbody></table>';
@@ -194,6 +199,35 @@ final class Admin {
 	}
 
 	/**
+	 * Renders the beta notice and the button that turns fulfillments on.
+	 */
+	private static function render_fulfillments() {
+		echo '<span class="ecomiq-activity-detail">' . esc_html__( 'A WooCommerce beta feature.', 'ecomiq-for-woocommerce' ) . '</span>';
+		if ( Fulfillments::uses_woocommerce_shipping() ) {
+			$issue = '<a href="' . esc_url( Fulfillments::ISSUE ) . '" target="_blank" rel="noopener noreferrer">#69430</a>';
+			echo '<span class="ecomiq-activity-detail">' . wp_kses(
+				sprintf(
+					/* translators: %s: link to the WooCommerce issue */
+					esc_html__( 'With WooCommerce Shipping, labels bought before stop showing on the order (%s).', 'ecomiq-for-woocommerce' ),
+					$issue
+				),
+				array(
+					'a' => array(
+						'href'   => true,
+						'target' => true,
+						'rel'    => true,
+					),
+				)
+			) . '</span>';
+		}
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="ecomiq-check-action">';
+		echo '<input type="hidden" name="action" value="ecomiq_fulfillments">';
+		wp_nonce_field( 'ecomiq_fulfillments' );
+		echo '<button type="submit" class="button">' . esc_html__( 'Turn on fulfillments', 'ecomiq-for-woocommerce' ) . '</button>';
+		echo '</form>';
+	}
+
+	/**
 	 * Runs the diagnostics again.
 	 */
 	public static function diagnose() {
@@ -201,6 +235,22 @@ final class Admin {
 		check_admin_referer( 'ecomiq_diagnose' );
 		Diagnostics::reset();
 		wp_safe_redirect( self::url() );
+		exit;
+	}
+
+	/**
+	 * Handles the button that turns WooCommerce fulfillments on.
+	 */
+	public static function fulfillments() {
+		self::guard();
+		check_admin_referer( 'ecomiq_fulfillments' );
+		$args = array();
+		if ( Fulfillments::available() ) {
+			Fulfillments::enable();
+			$args['ecomiq_notice'] = 'fulfillments_on';
+		}
+		Diagnostics::reset();
+		wp_safe_redirect( self::url( $args ) );
 		exit;
 	}
 
@@ -527,9 +577,10 @@ final class Admin {
 	 */
 	private static function notice() {
 		$messages = array(
-			'disconnected'   => array( 'success', __( 'Disconnected from Ecomiq.', 'ecomiq-for-woocommerce' ) ),
-			'server_saved'   => array( 'success', __( 'Address saved.', 'ecomiq-for-woocommerce' ) ),
-			'server_invalid' => array( 'error', __( 'Use an address like https://admin.ecomiq.pe, without a path.', 'ecomiq-for-woocommerce' ) ),
+			'disconnected'    => array( 'success', __( 'Disconnected from Ecomiq.', 'ecomiq-for-woocommerce' ) ),
+			'server_saved'    => array( 'success', __( 'Address saved.', 'ecomiq-for-woocommerce' ) ),
+			'server_invalid'  => array( 'error', __( 'Use an address like https://admin.ecomiq.pe, without a path.', 'ecomiq-for-woocommerce' ) ),
+			'fulfillments_on' => array( 'success', __( 'Fulfillments turned on.', 'ecomiq-for-woocommerce' ) ),
 		);
 		$key      = self::query( 'ecomiq_notice' );
 		if ( ! isset( $messages[ $key ] ) ) {

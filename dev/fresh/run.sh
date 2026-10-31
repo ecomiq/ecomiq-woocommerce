@@ -13,11 +13,19 @@ PHP
 $WP db reset --yes --quiet 2>/dev/null || $WP db create --quiet
 $WP core install --url=http://localhost --title="Fresh Store" --admin_user=admin --admin_password=admin-fresh --admin_email=admin@example.test --skip-email --quiet
 $WP plugin install woocommerce --version="$WCV" --activate --quiet
+$WP language core install es_ES --quiet
+$WP wc hpos disable >/dev/null 2>&1
 cp -R /plugin /site/wp-content/plugins/ecomiq-for-woocommerce
 echo "PHP $(php -r 'echo PHP_VERSION;') WP $($WP core version) WC $($WP plugin get woocommerce --field=version)"
 : > /site/debug.log
 $WP plugin activate ecomiq-for-woocommerce
 $WP eval-file /check.php
+$WP option update woocommerce_feature_fulfillments_enabled yes >/dev/null
+$WP eval-file /check.php emails
+$WP wc hpos enable >/dev/null 2>&1
+$WP eval-file /check.php emails
+$WP option delete woocommerce_feature_fulfillments_enabled >/dev/null
+$WP eval-file /check.php orders
 $WP plugin deactivate ecomiq-for-woocommerce --quiet
 $WP plugin uninstall ecomiq-for-woocommerce --quiet
 left="$($WP option list --search='ecomiq*' --format=count)"

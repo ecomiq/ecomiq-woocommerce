@@ -316,3 +316,53 @@ msgstr "Envío de %s"
 
 msgid "Ecomiq did not quote shipping"
 msgstr "Ecomiq no cotizó el envío"
+
+msgid "WooCommerce fulfillments"
+msgstr "Envíos parciales de WooCommerce"
+
+msgid "On"
+msgstr "Activos"
+
+msgid "Off"
+msgstr "Apagados"
+
+msgid "Off. They need WooCommerce 10.2 or later."
+msgstr "Apagados. Necesitan WooCommerce 10.2 o posterior."
+
+msgid "A WooCommerce beta feature."
+msgstr "Función beta de WooCommerce."
+
+msgid "With WooCommerce Shipping, labels bought before stop showing on the order (%s)."
+msgstr "Con WooCommerce Shipping, las etiquetas compradas antes dejan de verse en el pedido (%s)."
+
+msgid "Turn on fulfillments"
+msgstr "Activar envíos parciales"
+
+msgid "Fulfillments turned on."
+msgstr "Envíos parciales activados."
+
+msgid "Your products"
+msgstr "Tus productos"
+
+msgid "%d product"
+msgid_plural "%d products"
+msgstr[0] "%d producto"
+msgstr[1] "%d productos"
+
+msgid "To prepare"
+msgstr "Por preparar"
+
+msgid "Preparing"
+msgstr "En preparación"
+
+msgid "Shipped"
+msgstr "Enviado"
+
+msgid "Delivered"
+msgstr "Entregado"
+
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgid "Pending"
+msgstr "Pendiente"
