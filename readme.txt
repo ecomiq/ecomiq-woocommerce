@@ -4,7 +4,7 @@ Tags: woocommerce, marketplace, multichannel, inventory, orders
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,13 @@ In WooCommerce → Settings → Advanced → REST API, with the description "Eco
 Ecomiq marks the products it publishes with the `_ecomiq` meta. When an order is placed, the plugin copies it to the order lines of those products, so Ecomiq knows which lines it sold. It is hidden on the order screen and in emails.
 
 == Changelog ==
+
+= 1.2.0 =
+* New - Order lines for products Ecomiq published keep its hidden `_ecomiq` mark, from classic and block checkout, the REST API and the order screen, so Ecomiq knows which lines it sold.
+* New - Orders with products from several sellers show each part in the Ecomiq box on the order, with its products, status and tracking. Each line says who ships it.
+* New - Diagnostics says whether WooCommerce fulfillments are on and has a button to turn them on. They never turn on by themselves.
+* New - When Ecomiq already told the buyer about its shipments through fulfillments, WooCommerce does not send the "Completed order" email again.
+* New - The status endpoint reports the WooCommerce version and whether fulfillments are on.
 
 = 1.1.0 =
 * New - "Ecomiq" shipping method for shipping zones: checkout charges the rates Ecomiq quotes, one shipment per seller, with a fallback rate when Ecomiq does not answer.
