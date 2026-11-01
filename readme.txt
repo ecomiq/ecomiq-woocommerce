@@ -4,7 +4,7 @@ Tags: woocommerce, marketplace, multichannel, inventory, orders
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,10 @@ In WooCommerce → Settings → Advanced → REST API, with the description "Eco
 Ecomiq marks the products it publishes with the `_ecomiq` meta. When an order is placed, the plugin copies it to the order lines of those products, so Ecomiq knows which lines it sold. It is hidden on the order screen and in emails.
 
 == Changelog ==
+
+= 1.3.0 =
+* New - WordPress says when a new version is out, on the Plugins screen and in WooCommerce → Ecomiq, and installs it with "Update now" or with automatic updates. The connection with Ecomiq stays.
+* New - "View details" shows what changed in the new version.
 
 = 1.2.0 =
 * New - Order lines for products Ecomiq published keep its hidden `_ecomiq` mark, from classic and block checkout, the REST API and the order screen, so Ecomiq knows which lines it sold.

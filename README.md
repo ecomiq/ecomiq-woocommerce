@@ -43,6 +43,12 @@ En WordPress, el plugin agrega una página en **WooCommerce → Ecomiq** con:
 
    ![WooCommerce como canal de venta en Ecomiq](docs/images/canales.png)
 
+### Actualizaciones
+
+Cuando sale una versión nueva, WordPress la avisa en **Plugins** y en **WooCommerce → Ecomiq**, y se instala con **Actualizar ahora**, como cualquier plugin. También puedes activar sus actualizaciones automáticas en **Plugins**. La conexión con Ecomiq se mantiene.
+
+Las versiones anteriores a la 1.3.0 no traen el aviso: para pasar a la 1.3.0, súbela una vez en **Plugins → Añadir nuevo → Subir plugin** y elige **Reemplazar el actual con el subido**. No borres el plugin antes, porque al borrarlo se quita la conexión.
+
 ## Requisitos
 
 | | Versión mínima |

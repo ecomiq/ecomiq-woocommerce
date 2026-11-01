@@ -139,6 +139,7 @@ final class Admin {
 		echo '<div class="wrap ecomiq">';
 		echo '<h1 class="wp-heading-inline">Ecomiq</h1><hr class="wp-header-end">';
 		self::notice();
+		self::update_notice();
 		$connection = Connection::current();
 		if ( null !== $connection && 'disconnect' === self::query( 'ecomiq_view' ) ) {
 			self::render_disconnect();
@@ -587,6 +588,21 @@ final class Admin {
 			return;
 		}
 		echo '<div class="notice notice-' . esc_attr( $messages[ $key ][0] ) . ' is-dismissible"><p>' . esc_html( $messages[ $key ][1] ) . '</p></div>';
+	}
+
+	/**
+	 * Says when a newer version of the plugin is available, with a link to update it.
+	 */
+	private static function update_notice() {
+		$version = Updater::available();
+		if ( null === $version || ! current_user_can( 'update_plugins' ) ) {
+			return;
+		}
+		echo '<div class="notice notice-info"><p>';
+		/* translators: %s: plugin version. */
+		echo esc_html( sprintf( __( 'A new version of Ecomiq is available: %s.', 'ecomiq-for-woocommerce' ), $version ) );
+		echo ' <a href="' . esc_url( Updater::update_url() ) . '">' . esc_html__( 'Update now', 'ecomiq-for-woocommerce' ) . '</a>';
+		echo '</p></div>';
 	}
 
 	/**

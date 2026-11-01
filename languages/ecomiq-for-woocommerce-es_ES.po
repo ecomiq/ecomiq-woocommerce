@@ -341,6 +341,12 @@ msgstr "Activar envíos parciales"
 msgid "Fulfillments turned on."
 msgstr "Envíos parciales activados."
 
+msgid "A new version of Ecomiq is available: %s."
+msgstr "Hay una versión nueva de Ecomiq: %s."
+
+msgid "Update now"
+msgstr "Actualizar ahora"
+
 msgid "Your products"
 msgstr "Tus productos"
 

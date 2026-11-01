@@ -68,7 +68,17 @@ composer install && composer lint
 git tag v1.0.1 && git push origin v1.0.1
 ```
 
-El workflow `Publish - Release` comprueba que las tres versiones coincidan con el tag, arma el zip y crea el release con las notas del changelog. Ecomiq enlaza siempre a la última versión:
+El workflow `Publish - Release` comprueba que las tres versiones coincidan con el tag, arma el zip y crea el release con las notas del changelog.
+
+Las tiendas ven la versión nueva por sí solas. El encabezado `Update URI` hace que WordPress le pregunte a `Updater` (`includes/class-updater.php`), que lee el último release de GitHub. Ese release tiene que traer `ecomiq-for-woocommerce.zip` y no puede ser borrador ni prerelease. El aviso aparece en Plugins y en WooCommerce → Ecomiq, a más tardar 6 horas después, o al momento con **Escritorio → Actualizaciones → Comprobar de nuevo**. Si GitHub no responde, se vuelve a intentar en una hora.
+
+Para probarlo en la tienda local, sin red, contra un release simulado:
+
+```bash
+docker exec ecomiq-woo-market-wordpress-1 php -r 'define("WP_USE_THEMES", false); $_SERVER["HTTP_HOST"]="localhost:8444"; require "/var/www/html/wp-load.php"; require "/var/www/html/wp-content/plugins/ecomiq-for-woocommerce/dev/tests/updater-wordpress.php";'
+```
+
+Ecomiq enlaza siempre a la última versión:
 
 ```text
 https://github.com/ecomiq/ecomiq-woocommerce/releases/latest/download/ecomiq-for-woocommerce.zip
